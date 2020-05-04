@@ -30,10 +30,13 @@ public class Artista implements Serializable {
 	private String nome;
 	
 	@NotNull(message = "Nascimento deve ser preenchido.")
- 	@JsonFormat(pattern="dd/MM/yyyy")
-	@Temporal(TemporalType.DATE) 
+ 	//@JsonFormat(pattern="dd/MM/yyyy")
+	@Temporal(TemporalType.TIMESTAMP) 
 	@Column(name="nascimento", nullable=false)
 	private Date nascimento;
+	
+	@Transient
+	private Long nascimento2;
 
 	@NotNull(message = "Genero deve ser preenchido.")
 	@Enumerated(EnumType.STRING)
@@ -44,7 +47,11 @@ public class Artista implements Serializable {
 	private Paiz paizOrigem;
 
 	@ManyToMany(cascade= {CascadeType.DETACH})
-	private List<Intrumento> instrumento;
+	private List<Instrumento> instrumento;
+	
+	public Long getNascimento2() {
+		return nascimento != null ? nascimento.getTime() : null;
+	}
 
 }
 

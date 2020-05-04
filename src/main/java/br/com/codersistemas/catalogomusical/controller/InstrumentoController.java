@@ -20,26 +20,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.codersistemas.catalogomusical.domain.Intrumento;
-import br.com.codersistemas.catalogomusical.repository.IntrumentoRepository;
+import br.com.codersistemas.catalogomusical.domain.Instrumento;
+import br.com.codersistemas.catalogomusical.repository.InstrumentoRepository;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/intrumentos")
-public class IntrumentoController {
+@RequestMapping("/instrumentos")
+public class InstrumentoController {
 	
 	@Autowired
-	private IntrumentoRepository intrumentoRepository;
+	private InstrumentoRepository instrumentoRepository;
 	
 	//declaracoes
 	
 	@GetMapping
-	public List<Intrumento> listar() {
+	public List<Instrumento> listar() {
 		log.debug("listar!");
-		List<Intrumento> findAll = intrumentoRepository.findAll(Sort.by(Order.asc("nome"))); 
+		List<Instrumento> findAll = instrumentoRepository.findAll(Sort.by(Order.asc("nome"))); 
 		findAll.forEach(obj -> {
 			ReflectionUtils.mapToBasicDTO(obj);
 		});
@@ -47,8 +47,8 @@ public class IntrumentoController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Intrumento> buscar(@PathVariable Long id) {
-		Optional<Intrumento> findById = intrumentoRepository.findById(id);
+	public ResponseEntity<Instrumento> buscar(@PathVariable Long id) {
+		Optional<Instrumento> findById = instrumentoRepository.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -57,18 +57,21 @@ public class IntrumentoController {
 	
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
-	public Intrumento adicionar(@Valid @RequestBody Intrumento entity) {
-		return intrumentoRepository.save(entity);
+	public Instrumento adicionar(@Valid @RequestBody Instrumento entity) {
+		@Valid
+		Instrumento save = instrumentoRepository.save(entity);
+		ReflectionUtils.mapToBasicDTO(save);
+		return save;
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Intrumento> excluir(@PathVariable Long id) {
-		Optional<Intrumento> findById = intrumentoRepository.findById(id);
+	public ResponseEntity<Instrumento> excluir(@PathVariable Long id) {
+		Optional<Instrumento> findById = instrumentoRepository.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		intrumentoRepository.delete(findById.get());
-		return new ResponseEntity<Intrumento>(HttpStatus.NO_CONTENT);
+		instrumentoRepository.delete(findById.get());
+		return new ResponseEntity<Instrumento>(HttpStatus.NO_CONTENT);
 	}
 	
 

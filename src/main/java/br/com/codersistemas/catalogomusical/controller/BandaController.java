@@ -52,15 +52,18 @@ public class BandaController {
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}else {
-			ReflectionUtils.mapToBasicDTO(findById);
+			Banda banda = findById.get();
+			ReflectionUtils.mapToBasicDTO(banda);
+			return ResponseEntity.ok(banda);
 		}
-		return ResponseEntity.ok(findById.get());
 	}
 	
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Banda adicionar(@Valid @RequestBody Banda entity) {
-		return bandaRepository.save(entity);
+		Banda save = bandaRepository.save(entity);
+		ReflectionUtils.mapToBasicDTO(save);
+		return save;
 	}
 	
 	@DeleteMapping("/{id}")

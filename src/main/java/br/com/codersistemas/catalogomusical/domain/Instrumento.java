@@ -22,12 +22,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="intrumento")
-public class Intrumento implements Serializable {
+@Table(name="instrumento")
+public class Instrumento implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	@Id @GeneratedValue(generator="seq_intrumento", strategy=GenerationType.SEQUENCE) @SequenceGenerator(name="seq_intrumento", initialValue=1000, allocationSize=1) @Column(name="id_intrumento", nullable=false) 
+	@Id @GeneratedValue(generator="seq_instrumento", strategy=GenerationType.SEQUENCE) @SequenceGenerator(name="seq_instrumento", initialValue=1000, allocationSize=1) @Column(name="id_instrumento", nullable=false) 
 	private Long id;
 
 	@ClassLabelAttribute

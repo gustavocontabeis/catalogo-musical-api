@@ -53,14 +53,19 @@ public class AlbumController {
 		Optional<Album> findById = albumRepository.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
+		} else {
+			Album body = findById.get();
+			ReflectionUtils.mapToBasicDTO(body);
+			return ResponseEntity.ok(body);
 		}
-		return ResponseEntity.ok(findById.get());
 	}
 	
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Album adicionar(@RequestBody Album entity) {
-		return albumRepository.save(entity);
+		Album save = albumRepository.save(entity);
+		ReflectionUtils.mapToBasicDTO(save);
+		return save;
 	}
 	
 	@DeleteMapping("/{id}")
