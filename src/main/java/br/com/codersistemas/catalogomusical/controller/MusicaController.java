@@ -54,13 +54,17 @@ public class MusicaController {
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(findById.get());
+		Musica body = findById.get();
+		ReflectionUtils.mapToBasicDTO(body);//TODO Colocar no CoderGem
+		return ResponseEntity.ok(body);
 	}
 	
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Musica adicionar(@Valid @RequestBody Musica entity) {
-		return musicaRepository.save(entity);
+		Musica save = musicaRepository.save(entity);
+		ReflectionUtils.mapToBasicDTO(save);//TODO Colocar no CoderGem
+		return save;
 	}
 	
 	@DeleteMapping("/{id}")

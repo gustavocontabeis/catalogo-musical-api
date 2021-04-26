@@ -75,6 +75,11 @@ public class BandaController {
 		bandaRepository.delete(findById.get());
 		return new ResponseEntity<Banda>(HttpStatus.NO_CONTENT);
 	}
+	
+	@GetMapping("/nao-autorizado")
+	public ResponseEntity<String> naoAutorizado() {
+		return new ResponseEntity<String>("Nao Autorizado", HttpStatus.UNAUTHORIZED);
+	}
 
 }
 

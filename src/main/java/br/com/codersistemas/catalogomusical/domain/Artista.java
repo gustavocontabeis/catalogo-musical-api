@@ -30,7 +30,7 @@ public class Artista implements Serializable {
 	private String nome;
 	
 	@NotNull(message = "Nascimento deve ser preenchido.")
- 	//@JsonFormat(pattern="dd/MM/yyyy")
+ 	@JsonFormat(pattern="dd/MM/yyyy")
 	@Temporal(TemporalType.TIMESTAMP) 
 	@Column(name="nascimento", nullable=false)
 	private Date nascimento;

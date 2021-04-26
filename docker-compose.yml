@@ -1,0 +1,14 @@
+version: '3'
+services:
+ docker-app:
+    image: catalogo-musical-api-compose:latest
+    ports:
+      - "8084:8084"
+    depends_on:
+      - docker-postgres
+ docker-postgres:
+    image: postgres:10.4
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
