@@ -146,7 +146,7 @@ docker rmi catalogo-musical-api
 
 Executando o backend com o docker compose:
 	mvn clean package
-	docker build -f Dockerfile-comp --tag=catalogo-musical-api-compose:latest .
+	docker build -f Dockerfile-compose-backend --tag=catalogo-musical-api-compose:latest .
 	docker-compose up
 
 #Frontend 
