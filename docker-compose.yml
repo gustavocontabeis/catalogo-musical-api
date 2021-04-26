@@ -7,8 +7,16 @@ services:
     depends_on:
       - docker-postgres
  docker-postgres:
-    image: postgres:10.4
+    image: postgres:9.5-alpine
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+ docker-frontend:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - /home/gustavo/dev/workspace-coder/catalogo-musical/dist/catalogo-musical:/usr/share/nginx/html
+    depends_on:
+      - docker-app

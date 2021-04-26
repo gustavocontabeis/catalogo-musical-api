@@ -42,7 +42,7 @@ docker pull dpage/pgadmin4
 docker network create --driver bridge postgres-network
 docker network ls
 
-sudo docker run --name teste-postgres --network=postgres-network -e "POSTGRES_PASSWORD=Postgres2018!" -p 5432:5432 -v /home/gustavo/dev/CursoDocker/exemplo-postgres -d postgres
+sudo docker run --name teste-postgres --network=postgres-network -e "POSTGRES_PASSWORD=Postgres2018!" -p 5432:5432 -v /home/gustavo/dev/CursoDocker/exemplo-postgres -d postgres:9.5-alpine
 
 docker container ps
 
