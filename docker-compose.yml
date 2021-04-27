@@ -20,3 +20,12 @@ services:
       - /home/gustavo/dev/workspace-coder/catalogo-musical/dist/catalogo-musical:/usr/share/nginx/html
     depends_on:
       - docker-app
+ docker-pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "15432:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=gustavocontabeis@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=PgAdmin2018!
+    depends_on:
+      - docker-postgres
