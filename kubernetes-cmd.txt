@@ -1,0 +1,19 @@
+minikube start
+kubectl create -f kubernetes-pods.yaml --save-config --record
+kubectl get all
+
+cd /home/gustavo/dev/workspace-coder/catalogo-musical-api
+docker build -f Dockerfile-kubernetes --tag=gustavocontabeis/catalogo-musical-api-kubernetes:latest .
+docker push gustavocontabeis/catalogo-musical-api-kubernetes:latest
+docker images
+
+kubectl create -f kubernetes-dp-backend.yaml --save-config --record
+kubectl get all
+
+# criei imagem com o curso da loiane
+kubectl create -f kubernetes-dp-frontend.yaml --save-config --record
+kubectl get all
+
+kubectl create -f kubernetes-srv.yaml --save-config --record
+kubectl get all
+minikube service frontend-svc --url

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogo-musical-dp
+  labels:
+    app: catalogo-musical-app
+    type: catalogo-musical
+spec:
+  template:
+    metadata:
+      name: catalogo-musical-backend-pod
+      labels:
+        app: catalogo-musical-app
+        type: catalogo-musical
+    spec:
+      containers:
+        - name: catalogo-musical-api-container
+          image: gustavocontabeis/catalogo-musical-api-kubernetes
+  selector:
+    matchLabels:
+      type: catalogo-musical
+  replicas: 2

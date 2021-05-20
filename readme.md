@@ -27,30 +27,37 @@ sudo service postgresql status
 ~~~
 
 ###Listar as imagens:
-
+~~~
 sudo docker images
-
+~~~
 ###Se não houver a imagen do postgres, baixe ela
-
+~~~
 docker pull postgres
 docker pull dpage/pgadmin4
-
+~~~
 ##Rede
 
 ###Crie a rede para o postgres
-
+~~~
 docker network create --driver bridge postgres-network
 docker network ls
-
+~~~
+~~~
 sudo docker run --name teste-postgres --network=postgres-network -e "POSTGRES_PASSWORD=Postgres2018!" -p 5432:5432 -v /home/gustavo/dev/CursoDocker/exemplo-postgres -d postgres:9.5-alpine
+~~~
 
+~~~
 docker container ps
+~~~
 
+~~~
 PGADMIN
 docker run --name teste-pgadmin --network=postgres-network -p 15432:80 -e "PGADMIN_DEFAULT_EMAIL=gustavocontabeis@gmail.com" -e "PGADMIN_DEFAULT_PASSWORD=PgAdmin2018!" -d dpage/pgadmin4
+~~~
 
-
+~~~
 http://localhost:15432
+~~~
 
 Login:
 gustavocontabeis@gmail.com
@@ -129,25 +136,60 @@ cd /home/gustavo/dev/workspace-coder/catalogo-musical-api
 para rodar o backend fora do docker usa-se host = 0.0.0.0
 para rodar o backend dentro do docker usa-se host = "nome do container do postgres"
 
-Executando o backend sem o docker:
+###Executando o backend sem o docker:
+~~~
 	mvn clean package
 	java -jar -Dspring.profiles.active=dev target/catalogo-musical-api.jar
+~~~
 
-Executando o backend com o docker:
+###Executando o backend com o docker:
+~~~
 	mvn clean package
 	docker build --tag=catalogo-musical-api:latest .
 	docker run --name backend-catalogo-musical -p 8084:8084 --network=postgres-network catalogo-musical-api:latest
+~~~
 	ou
+	
+~~~
 	docker container start backend-catalogo-musical
+~~~
 
+####Limpando...
+~~~
 docker container rm backend-catalogo-musical
 docker rmi catalogo-musical-api
+~~~
 
+###Executando a aplicaçção com o docker compose:
 
-Executando o backend com o docker compose:
-	mvn clean package
-	docker build -f Dockerfile-compose-backend --tag=catalogo-musical-api-compose:latest .
-	docker-compose up
+Verifique se o frontend foi construído:
+
+~~~
+cd /home/gustavo/dev/workspace-coder/catalogo-musical
+npm install
+ng build
+~~~
+
+Verifique se a imagem "catalogo-musical-api-compose" existe. 
+Se não existe, builde-a com:
+
+~~~
+mvn clean package
+docker build -f Dockerfile-compose-backend --tag=catalogo-musical-api-compose:latest .
+~~~
+
+Depois execute:
+
+~~~
+cd ~/dev/workspace-coder/catalogo-musical-api
+docker-compose up
+~~~
+
+Agora teste com:
+
+~~~
+http://localhost
+~~~
 
 #Frontend 
 
