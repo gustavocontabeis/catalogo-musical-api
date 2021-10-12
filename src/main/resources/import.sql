@@ -102,5 +102,7 @@ INSERT INTO public.condominio (id_condominio, nome, logradouro, numero, bairro, 
 INSERT INTO public.bloco (id_bloco, nome, tipo, id_condominio) VALUES(nextval('public.seq_bloco'), 'Bloco 1', 'BLOCO', currval('public.seq_condominio'));
 INSERT INTO public.condominio (id_condominio, nome, logradouro, numero, bairro, cidade, id_sindico) values (nextval('public.seq_condominio'),'Bella Rússia', 'Rua Gervásio da Rosa', '2824', 'Mário Quintana', 'Lajeado', currval('public.seq_pessoa'));
 INSERT INTO public.bloco (id_bloco, nome, tipo, id_condominio) VALUES(nextval('public.seq_bloco'), 'Bloco 1', 'BLOCO', currval('public.seq_condominio'));
-INSERT INTO public.condominio (id_condominio, nome, logradouro, numero, bairro, cidade, id_sindico) values (nextval('public.seq_condominio'),'Residencial Bosque das Araucárias', 'Rua da Cultura', '1639', 'Auxiliadora', 'Bom Retiro do Sul', currval('public.seq_pessoa'));
+INSERT INTO public.pessoa (id_pessoa, cpf, genero, nascimento, nome) values (nextval('public.seq_pessoa'), '901.687.800-99', 'MASCULINO', '1978-08-26', 'Lautenir Jose da Silva');
+INSERT INTO public.sindico(id_sindico, ate, de, id_pessoa)VALUES(nextval('public.seq_sindico'), null, '2020-01-01', currval('public.seq_pessoa'));
+INSERT INTO public.condominio (id_condominio, nome, logradouro, numero, bairro, cidade, id_sindico) values (nextval('public.seq_condominio'),'Residencial Bom Retiro', 'Rua da Cultura', '1639', 'Auxiliadora', 'Bom Retiro do Sul', currval('public.seq_pessoa'));
 INSERT INTO public.bloco (id_bloco, nome, tipo, id_condominio) VALUES(nextval('public.seq_bloco'), 'Bloco 1', 'BLOCO', currval('public.seq_condominio'));

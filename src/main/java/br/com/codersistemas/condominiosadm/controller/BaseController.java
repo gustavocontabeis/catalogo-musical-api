@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -53,28 +55,52 @@ public class BaseController<T> {
 					log.debug("Field: {}", field);
 					log.debug("MatchMode: {}", filterItem.getMatchMode());
 					log.debug("Value: {}", filterItem.getValue());
+					Path<T> path = getPath(root, field);
+					Expression<String> expression = getExpression(root, field);
 					switch (filterItem.getMatchMode()) {
 					case "equals":
-						predicates.add(criteriaBuilder.equal(root.get(field), filterItem.getValue()));
+						predicates.add(criteriaBuilder.equal(path, filterItem.getValue()));
 						break;
 					case "notEquals":
-						predicates.add(criteriaBuilder.not(criteriaBuilder.equal(root.get(field), filterItem.getValue())));
+						predicates.add(criteriaBuilder.not(criteriaBuilder.equal(path, filterItem.getValue())));
 						break;
 					case "startsWith":
-						predicates.add(criteriaBuilder.like(root.get(field), filterItem.getValue() + "%"));
+						predicates.add(criteriaBuilder.like(expression, filterItem.getValue() + "%"));
 						break;
 					case "endsWith":
-						predicates.add(criteriaBuilder.like(root.get(field), "%" + filterItem.getValue()));
+						predicates.add(criteriaBuilder.like(expression, "%" + filterItem.getValue()));
 						break;
 					case "contains":
-						predicates.add(criteriaBuilder.like(root.get(field), "%" + filterItem.getValue() + "%"));
+						predicates.add(criteriaBuilder.like(expression, "%" + filterItem.getValue() + "%"));
 						break;
 					case "notContains":
-						predicates.add(criteriaBuilder.not(criteriaBuilder.like(root.get(field), "%" + filterItem.getValue() + "%")));
+						predicates.add(criteriaBuilder.not(criteriaBuilder.like(expression, "%" + filterItem.getValue() + "%")));
 						break;
 					}
 				}
 				return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+			}
+			private Expression<String> getExpression(Root<T> root, String fields) {
+				log.info(">getExpression: {}", fields);
+				Path<String> rootPath = null;
+				String[] split = fields.split("\\.");
+				for (String field : split) {
+					log.info("->{}", field);
+					 Path<String> path = rootPath == null ? root.get(field) : rootPath.get(field);
+					 rootPath = path;
+				}
+				return rootPath;
+			}
+			private Path<T> getPath(Root<T> root, String fields) {
+				log.info(">getPath: {}", fields);
+				Path<T> rootPath = null;
+				String[] split = fields.split("\\.");
+				for (String field : split) {
+					log.info("->{}", field);
+					 Path<T> path = rootPath == null ? root.get(field) : rootPath.get(field);
+					 rootPath = path;
+				}
+				return rootPath;
 			}
 		};
 		return specification;
