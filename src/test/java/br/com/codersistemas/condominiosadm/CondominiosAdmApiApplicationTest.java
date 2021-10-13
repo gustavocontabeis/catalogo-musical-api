@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,13 +23,19 @@ import br.com.codersistemas.condominiosadm.domain.Caixa;
 import br.com.codersistemas.condominiosadm.domain.CentroDeCusto;
 import br.com.codersistemas.condominiosadm.domain.Condominio;
 import br.com.codersistemas.condominiosadm.domain.Faturamento;
+import br.com.codersistemas.condominiosadm.domain.Morador;
 import br.com.codersistemas.condominiosadm.domain.Pessoa;
 import br.com.codersistemas.condominiosadm.domain.Sindico;
 import br.com.codersistemas.condominiosadm.enums.Genero;
 import br.com.codersistemas.condominiosadm.enums.TipoBloco;
 import br.com.codersistemas.condominiosadm.enums.TipoContabancaria;
 import br.com.codersistemas.condominiosadm.enums.TipoDocumento;
+import br.com.codersistemas.condominiosadm.repository.ApartamentoRepository;
+import br.com.codersistemas.condominiosadm.repository.BlocoRepository;
+import br.com.codersistemas.condominiosadm.repository.BoletoRepository;
 import br.com.codersistemas.condominiosadm.repository.CondominioRepository;
+import br.com.codersistemas.condominiosadm.repository.FaturamentoRepository;
+import br.com.codersistemas.condominiosadm.repository.MoradorRepository;
 import br.com.codersistemas.condominiosadm.repository.PessoaRepository;
 import br.com.codersistemas.gem.gemdados.GeraCpfCnpj;
 import br.com.codersistemas.gem.gemdados.GeradorPessoaFisica;
@@ -51,14 +58,23 @@ class CondominiosAdmApplicationTests {
 	@Autowired
     private CondominioRepository condominioRepository;
 	
+	@Autowired
+    private BlocoRepository blocoRepository;
+	
+	@Autowired
+    private ApartamentoRepository apartamentoRepository;
+	
+	@Autowired
+    private FaturamentoRepository faturamentoRepository;
+	
+	@Autowired
+    private BoletoRepository boletoRepository;
+	
+	@Autowired
+    private MoradorRepository moradorRepository;
+	
 	@BeforeEach
 	public void init() {
-		
-		List<Pessoa> findAll = pessoaRepository.findAll();
-		
-		if(condominio != null) {
-			return;
-		}
 		
 		gemCpfCnpj = new GeraCpfCnpj();
 		gemPJ = new GeradorPessoaJuridica();
@@ -74,18 +90,18 @@ class CondominiosAdmApplicationTests {
 		
 		
 		Sindico sindico = new Sindico();
-		Pessoa pessoa = new Pessoa();
-		pessoa.setId(null);
-		pessoa.setNome("Joao da Silva");
-		pessoa.setGenero(Genero.MASCULINO);
-		pessoa.setNascimento(LocalDate.now().withDayOfMonth(27).withMonth(8).withYear(1978));
-		pessoa.setCpf("745.936.370-74");
-		sindico.setPessoa(pessoa);
+		//sindico.setId(null);
+		sindico.setNome("Joao da Silva");
+		sindico.setGenero(Genero.MASCULINO);
+		sindico.setNascimento(LocalDate.now().withDayOfMonth(27).withMonth(8).withYear(1978));
+		sindico.setCpf("745.936.370-74");
 		sindico.setDe(LocalDate.now().withDayOfMonth(1).withMonth(1));
 		sindico.setAte(LocalDate.now().withDayOfMonth(31).withMonth(12));
 		condominio.setSindico(sindico);
 		
-		condominioRepository.save(condominio);
+		condominioRepository.saveAndFlush(condominio);
+		log.info("Condomínio: {}", condominio.getId());
+		log.info("Síndico: {}", condominio.getSindico().getPessoaId());
 		
 		List<Bloco> blocos = new ArrayList<Bloco>();
 		String[] nomeBlocos = new String[]{"Bloco Sul", "Bloco Norte"};
@@ -97,6 +113,8 @@ class CondominiosAdmApplicationTests {
 			bloco.setId(null);
 			bloco.setNome(nomeBlocos[a]);
 			bloco.setTipo(TipoBloco.BLOCO);
+			blocoRepository.saveAndFlush(bloco);
+			log.info("---> {}", bloco);
 			blocos.add(bloco);
 			condominio.setBlocos(blocos);
 			for (int b = 0; b < 10; b++) {
@@ -110,11 +128,23 @@ class CondominiosAdmApplicationTests {
 							.build();
 					Apartamento apartamento = new Apartamento();
 					apartamento.setId(null);
+					apartamento.setBloco(bloco);
 					apartamento.setMoradores(new ArrayList<>());
 					apartamento.setNumero("" + (100*(b+1) + c+1) );
 					apartamento.setProprietario(proprietario);
 					apartamento.getMoradores().add(proprietario);
 					apartamento.setTitular(proprietario);
+					try {
+						apartamentoRepository.saveAndFlush(apartamento);
+						log.info("---> {}", apartamento);
+						log.info("---> {}", apartamento.getTitular());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					Morador morador = new Morador(proprietario);
+					morador.setProprietario(true);
+					morador.setApartamento(apartamento);
+					moradorRepository.save(morador);
 					bloco.getApartamentos().add(apartamento);
 				}
 			}
@@ -124,6 +154,8 @@ class CondominiosAdmApplicationTests {
 			faturamento.setPeriodo(LocalDate.now().withDayOfMonth(1));
 			faturamento.setCondominio(condominio);
 			faturamento.setBoletos(new ArrayList<Boleto>());
+			faturamentoRepository.saveAndFlush(faturamento);
+			log.info("---> Fatura: {}", faturamento);
 			condominio.getFaturamentos().add(faturamento);
 			for (Bloco blocoItem : condominio.getBlocos()) {
 				for (Apartamento apartamento : blocoItem.getApartamentos()) {
@@ -137,11 +169,43 @@ class CondominiosAdmApplicationTests {
 					boleto.setTotal(BigDecimal.ZERO);
 					boleto.setValor(new BigDecimal(400));
 					boleto.setVencimento(LocalDate.now().withDayOfMonth(10));
+					boleto.setFaturamento(faturamento);
+					boletoRepository.saveAndFlush(boleto);
+					log.info("---> Boleto: {}", boleto);
 					faturamento.getBoletos().add(boleto);
 				}
 			}
 		}
+		log.info("-------");
 		
+		List<Condominio> findAll = condominioRepository.findAll();
+		for (Condominio condominio : findAll) {
+			log.info("{}", condominio);
+			Optional<List<Bloco>> findByCondominioId = blocoRepository.findByCondominioId(condominio.getId());
+			if(findByCondominioId.isPresent()) {
+				for (Bloco bloco : findByCondominioId.get()) {
+					log.info("{}", bloco);
+					Optional<List<Apartamento>> findByBlocoId = apartamentoRepository.findByBlocoId(bloco.getId());
+					if(findByBlocoId.isPresent()) {
+						for (Apartamento apartamento : findByBlocoId.get()) {
+							log.info("{}", apartamento);
+							Optional<List<Morador>> findByApartamentoId = moradorRepository.findByApartamentoId(apartamento.getId());
+							if(findByApartamentoId.isPresent()) {
+								for (Pessoa m : findByApartamentoId.get()) {
+									log.info("{}", m);	
+								}
+							}
+						}
+					}
+				}
+			}
+			Optional<List<Faturamento>> findByCondominioId2 = faturamentoRepository.findByCondominioId(condominio.getId());
+			if(findByCondominioId2.isPresent()) {
+				for (Faturamento f : findByCondominioId2.get()) {
+					log.info("{}", f);
+				}
+			}
+		}
 	}
 
 	/**
@@ -184,7 +248,7 @@ class CondominiosAdmApplicationTests {
 			listCaixa.add(Caixa.builder()
 					.id(new Long(split[i++]))
 					.condominio(condominio)
-					.pessoa(condominio.getSindico().getPessoa())
+					.pessoa(condominio.getSindico())
 					.data(LocalDateTime.now())
 					.centroDeCusto(listCentroDeCustos.get(new Integer(split[i++])))
 					.para(split[i++])

@@ -27,6 +27,7 @@ import br.com.codersistemas.condominiosadm.domain.Caixa;
 import br.com.codersistemas.condominiosadm.domain.CentroDeCusto;
 import br.com.codersistemas.condominiosadm.domain.Condominio;
 import br.com.codersistemas.condominiosadm.domain.Faturamento;
+import br.com.codersistemas.condominiosadm.domain.Morador;
 import br.com.codersistemas.condominiosadm.domain.Pessoa;
 import br.com.codersistemas.condominiosadm.domain.Sindico;
 import br.com.codersistemas.condominiosadm.enums.Genero;
@@ -34,7 +35,9 @@ import br.com.codersistemas.condominiosadm.enums.TipoBloco;
 import br.com.codersistemas.condominiosadm.enums.TipoContabancaria;
 import br.com.codersistemas.condominiosadm.enums.TipoDocumento;
 import br.com.codersistemas.condominiosadm.repository.CondominioRepository;
+import br.com.codersistemas.condominiosadm.repository.MoradorRepository;
 import br.com.codersistemas.condominiosadm.repository.PessoaRepository;
+import br.com.codersistemas.condominiosadm.repository.SindicoRepository;
 import br.com.codersistemas.gem.gemdados.GeraCpfCnpj;
 import br.com.codersistemas.gem.gemdados.GeradorPessoaFisica;
 import br.com.codersistemas.gem.gemdados.GeradorPessoaJuridica;
@@ -42,23 +45,19 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootTest
-class CondominioTest {
+class PessoaTest {
 
-	private Condominio condominio;
+	@Autowired
+    private PessoaRepository pessoaRepository;
 	
 	@Autowired
-    private CondominioRepository condominioRepository;
+    private SindicoRepository sindicoRepository;
+	
+	@Autowired
+    private MoradorRepository moradorRepository;
 	
 	@BeforeEach
 	public void init() {
-		
-		condominio = new Condominio();
-		condominio.setCidade("Porto Alegre");
-		condominio.setBairro("Sarandi");
-		condominio.setLogradouro("Rua Engenheiro Sadi Castro");
-		condominio.setNome("Ed. Monalisa");
-		condominio.setNumero("481");
-		condominio.setFaturamentos(new ArrayList<>());
 		
 		Sindico sindico = new Sindico();
 		sindico.setPessoaId(null);
@@ -68,44 +67,26 @@ class CondominioTest {
 		sindico.setCpf("745.936.370-74");
 		sindico.setDe(LocalDate.now().withDayOfMonth(1).withMonth(1));
 		sindico.setAte(LocalDate.now().withDayOfMonth(31).withMonth(12));
-		condominio.setSindico(sindico);
 		
 	}
 	
 	@Test
-	public void crud() {
+	public void pessoa() {
 		
-		condominioRepository.deleteAll();
-		
-		condominioRepository.save(condominio);
-		assertNotNull(condominio.getId());
-		
-		String updateValue = "Monalisa2";
-		condominio.setNome(updateValue);
-		condominioRepository.saveAndFlush(condominio);
-		
-		log.info("{} - {}", condominio.getId(), condominio.getSindico().getPessoaId());
-		Optional<Condominio> findById = condominioRepository.findById(condominio.getId());
-		if(findById.isPresent()) {
-			Condominio get = findById.get();
-			log.info("{}", get.getNome());
-		}
-		//assertEquals(updateValue, one.getNome());
-		
-		condominioRepository.delete(condominio);
-
 	}
-
+	
 	@Test
-	public void findBySindicoId() {
-		
-		condominioRepository.save(condominio);
-		
-		Optional<List<Condominio>> findBySindicoId = condominioRepository.findBySindicoPessoaId(condominio.getSindico().getPessoaId());
-		log.info("{}", findBySindicoId.isPresent());
-		if(findBySindicoId.isPresent()) {
-			log.info("{}", findBySindicoId.get());	
-		}
+	public void morador() {
+		Morador morador = new Morador();
+		morador.setApartamento(null);
+		morador.setCpf("999.999.800-99");
+		morador.setGenero(Genero.MASCULINO);
+		morador.setNascimento(LocalDate.now());
+		morador.setNome("Oi");
+		morador.setPessoaId(null);
+		morador.setProprietario(true);
+		moradorRepository.saveAndFlush(morador);
+		log.info("{}", morador.getPessoaId());
 	}
 
 }
