@@ -45,7 +45,7 @@ public class Condominio implements Serializable {
 	//@ForeignKey(name = "Condominio_sindico_fk")
 	private Sindico sindico;
 
-	@OneToMany(mappedBy="condominio")
+	@OneToMany(mappedBy="condominio", fetch = FetchType.LAZY)
 	private List<Bloco> blocos;
 
 	@OneToMany(mappedBy="condominio")
