@@ -13,5 +13,4 @@ public interface FaturamentoRepository extends JpaRepository<Faturamento, Long>,
 
 	Optional<List<Faturamento>> findByCondominioId(Long id);
 
-	
 }

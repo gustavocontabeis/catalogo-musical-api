@@ -59,7 +59,7 @@ public class CondominioController extends BaseController<Condominio> {
 	}
 
 	@PostMapping("/page")
-	public org.springframework.data.domain.Page<Condominio> listar(@RequestBody LazyLoadEvent event) {
+	public Page<Condominio> listar(@RequestBody LazyLoadEvent event) {
 
 		log.info("{}", event);
 

@@ -60,11 +60,11 @@ class PessoaTest {
 	public void init() {
 		
 		Sindico sindico = new Sindico();
-		sindico.setPessoaId(null);
-		sindico.setNome("Joao da Silva");
-		sindico.setGenero(Genero.MASCULINO);
-		sindico.setNascimento(LocalDate.now().withDayOfMonth(27).withMonth(8).withYear(1978));
-		sindico.setCpf("745.936.370-74");
+		sindico.setPessoa(new Pessoa());
+		sindico.getPessoa().setNome("Joao da Silva");
+		sindico.getPessoa().setGenero(Genero.MASCULINO);
+		sindico.getPessoa().setNascimento(LocalDate.now().withDayOfMonth(27).withMonth(8).withYear(1978));
+		sindico.getPessoa().setCpf("745.936.370-74");
 		sindico.setDe(LocalDate.now().withDayOfMonth(1).withMonth(1));
 		sindico.setAte(LocalDate.now().withDayOfMonth(31).withMonth(12));
 		
@@ -79,14 +79,15 @@ class PessoaTest {
 	public void morador() {
 		Morador morador = new Morador();
 		morador.setApartamento(null);
-		morador.setCpf("999.999.800-99");
-		morador.setGenero(Genero.MASCULINO);
-		morador.setNascimento(LocalDate.now());
-		morador.setNome("Oi");
-		morador.setPessoaId(null);
+		morador.setPessoa(new Pessoa());
+		morador.getPessoa().setCpf("999.999.800-99");
+		morador.getPessoa().setGenero(Genero.MASCULINO);
+		morador.getPessoa().setNascimento(LocalDate.now());
+		morador.getPessoa().setNome("Oi");
+		morador.getPessoa().setId(null);
 		morador.setProprietario(true);
 		moradorRepository.saveAndFlush(morador);
-		log.info("{}", morador.getPessoaId());
+		log.info("{}", morador.getId());
 	}
 
 }

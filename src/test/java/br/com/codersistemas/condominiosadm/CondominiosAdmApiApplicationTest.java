@@ -37,6 +37,7 @@ import br.com.codersistemas.condominiosadm.repository.CondominioRepository;
 import br.com.codersistemas.condominiosadm.repository.FaturamentoRepository;
 import br.com.codersistemas.condominiosadm.repository.MoradorRepository;
 import br.com.codersistemas.condominiosadm.repository.PessoaRepository;
+import br.com.codersistemas.condominiosadm.service.MoradorService;
 import br.com.codersistemas.gem.gemdados.GeraCpfCnpj;
 import br.com.codersistemas.gem.gemdados.GeradorPessoaFisica;
 import br.com.codersistemas.gem.gemdados.GeradorPessoaJuridica;
@@ -71,7 +72,7 @@ class CondominiosAdmApplicationTests {
     private BoletoRepository boletoRepository;
 	
 	@Autowired
-    private MoradorRepository moradorRepository;
+    private MoradorService moradorService;
 	
 	@BeforeEach
 	public void init() {
@@ -91,17 +92,18 @@ class CondominiosAdmApplicationTests {
 		
 		Sindico sindico = new Sindico();
 		//sindico.setId(null);
-		sindico.setNome("Joao da Silva");
-		sindico.setGenero(Genero.MASCULINO);
-		sindico.setNascimento(LocalDate.now().withDayOfMonth(27).withMonth(8).withYear(1978));
-		sindico.setCpf("745.936.370-74");
+		sindico.setPessoa(new Pessoa());
+		sindico.getPessoa().setNome("Joao da Silva");
+		sindico.getPessoa().setGenero(Genero.MASCULINO);
+		sindico.getPessoa().setNascimento(LocalDate.now().withDayOfMonth(27).withMonth(8).withYear(1978));
+		sindico.getPessoa().setCpf("745.936.370-74");
 		sindico.setDe(LocalDate.now().withDayOfMonth(1).withMonth(1));
 		sindico.setAte(LocalDate.now().withDayOfMonth(31).withMonth(12));
 		condominio.setSindico(sindico);
 		
 		condominioRepository.saveAndFlush(condominio);
 		log.info("Condomínio: {}", condominio.getId());
-		log.info("Síndico: {}", condominio.getSindico().getPessoaId());
+		log.info("Síndico: {}", condominio.getSindico().getPessoa().getId());
 		
 		List<Bloco> blocos = new ArrayList<Bloco>();
 		String[] nomeBlocos = new String[]{"Bloco Sul", "Bloco Norte"};
@@ -144,7 +146,7 @@ class CondominiosAdmApplicationTests {
 					Morador morador = new Morador(proprietario);
 					morador.setProprietario(true);
 					morador.setApartamento(apartamento);
-					moradorRepository.save(morador);
+					moradorService.save(morador);
 					bloco.getApartamentos().add(apartamento);
 				}
 			}
@@ -189,9 +191,9 @@ class CondominiosAdmApplicationTests {
 					if(findByBlocoId.isPresent()) {
 						for (Apartamento apartamento : findByBlocoId.get()) {
 							log.info("{}", apartamento);
-							Optional<List<Morador>> findByApartamentoId = moradorRepository.findByApartamentoId(apartamento.getId());
+							Optional<List<Morador>> findByApartamentoId = moradorService.findByApartamentoId(apartamento.getId());
 							if(findByApartamentoId.isPresent()) {
-								for (Pessoa m : findByApartamentoId.get()) {
+								for (Morador m : findByApartamentoId.get()) {
 									log.info("{}", m);	
 								}
 							}
@@ -248,7 +250,7 @@ class CondominiosAdmApplicationTests {
 			listCaixa.add(Caixa.builder()
 					.id(new Long(split[i++]))
 					.condominio(condominio)
-					.pessoa(condominio.getSindico())
+					.pessoa(condominio.getSindico().getPessoa())
 					.data(LocalDateTime.now())
 					.centroDeCusto(listCentroDeCustos.get(new Integer(split[i++])))
 					.para(split[i++])

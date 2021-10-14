@@ -74,6 +74,11 @@
         </dependency>
         
 		<dependency>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		</dependency>
+        
+		<dependency>
 		    <groupId>org.junit.vintage</groupId>
 		    <artifactId>junit-vintage-engine</artifactId>
 		    <scope>test</scope>
@@ -89,7 +94,6 @@
 			<groupId>br.com.codersistemas</groupId>
 			<artifactId>coder-gem-data</artifactId>
 			<version>1.0-SNAPSHOT</version>
-			<scope>test</scope>
 		</dependency> 
 <!--
 		-->

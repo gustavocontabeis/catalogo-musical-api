@@ -40,7 +40,7 @@ public class Sindico implements Serializable {
 	@Column(name = "id_sindico", nullable = false)
 	private Long id;
 
-	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER )
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_pessoa", nullable = false, foreignKey = @ForeignKey(name = "Sindico_Pessoa_fk"))
 	private Pessoa pessoa;
 

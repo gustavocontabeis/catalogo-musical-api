@@ -61,11 +61,12 @@ class CondominioTest {
 		condominio.setFaturamentos(new ArrayList<>());
 		
 		Sindico sindico = new Sindico();
-		sindico.setPessoaId(null);
-		sindico.setNome("Joao da Silva");
-		sindico.setGenero(Genero.MASCULINO);
-		sindico.setNascimento(LocalDate.now().withDayOfMonth(27).withMonth(8).withYear(1978));
-		sindico.setCpf("745.936.370-74");
+		sindico.setId(null);
+		sindico.setPessoa(new Pessoa());
+		sindico.getPessoa().setNome("Joao da Silva");
+		sindico.getPessoa().setGenero(Genero.MASCULINO);
+		sindico.getPessoa().setNascimento(LocalDate.now().withDayOfMonth(27).withMonth(8).withYear(1978));
+		sindico.getPessoa().setCpf("745.936.370-74");
 		sindico.setDe(LocalDate.now().withDayOfMonth(1).withMonth(1));
 		sindico.setAte(LocalDate.now().withDayOfMonth(31).withMonth(12));
 		condominio.setSindico(sindico);
@@ -75,7 +76,7 @@ class CondominioTest {
 	@Test
 	public void crud() {
 		
-		condominioRepository.deleteAll();
+		//condominioRepository.deleteAll();
 		
 		condominioRepository.save(condominio);
 		assertNotNull(condominio.getId());
@@ -84,28 +85,17 @@ class CondominioTest {
 		condominio.setNome(updateValue);
 		condominioRepository.saveAndFlush(condominio);
 		
-		log.info("{} - {}", condominio.getId(), condominio.getSindico().getPessoaId());
+		log.info("{} - {}", condominio.getId(), condominio.getSindico().getPessoa().getId());
 		Optional<Condominio> findById = condominioRepository.findById(condominio.getId());
 		if(findById.isPresent()) {
 			Condominio get = findById.get();
 			log.info("{}", get.getNome());
 		}
+		
 		//assertEquals(updateValue, one.getNome());
 		
 		condominioRepository.delete(condominio);
 
-	}
-
-	@Test
-	public void findBySindicoId() {
-		
-		condominioRepository.save(condominio);
-		
-		Optional<List<Condominio>> findBySindicoId = condominioRepository.findBySindicoPessoaId(condominio.getSindico().getPessoaId());
-		log.info("{}", findBySindicoId.isPresent());
-		if(findBySindicoId.isPresent()) {
-			log.info("{}", findBySindicoId.get());	
-		}
 	}
 
 }

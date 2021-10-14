@@ -1,5 +1,6 @@
 package br.com.codersistemas.condominiosadm.controller;
 
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -7,8 +8,11 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,7 +26,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Faturamento;
-import br.com.codersistemas.condominiosadm.repository.FaturamentoRepository;
+import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
+import br.com.codersistemas.condominiosadm.service.FaturamentoService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,24 +35,41 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/faturamentos")
-public class FaturamentoController {
+public class FaturamentoController extends BaseController<Faturamento> {
 	
 	@Autowired
-	private FaturamentoRepository faturamentoRepository;
+	private FaturamentoService faturamentoService;
+	
+	//declaracoes
 	
 	@GetMapping
 	public List<Faturamento> listar() {
 		log.debug("listar!");
-		List<Faturamento> findAll = faturamentoRepository.findAll(Sort.by(Order.asc("nome"))); 
+		List<Faturamento> findAll = faturamentoService.findAll(Sort.by(Order.asc("nome"))); 
 		findAll.forEach(obj -> {
 			ReflectionUtils.mapToBasicDTO(obj);
+		});
+		return findAll;
+	}
+	
+	@PostMapping("/page")
+	public Page<Faturamento> listar(@RequestBody LazyLoadEvent event) {
+		log.info("{}", event);
+		Specification<Faturamento> specification = createSpecification(event);
+		PageRequest pageRequest = getPageRequest(event);
+		Page<Faturamento> findAll = faturamentoService.findAll(specification, pageRequest);
+		findAll.getContent().forEach(obj -> {
+			obj.setBoletos(null);
+			obj.getCondominio().setBlocos(null);
+			obj.getCondominio().setFaturamentos(null);
+			// ReflectionUtils.mapToBasicDTO(obj);
 		});
 		return findAll;
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Faturamento> buscar(@PathVariable Long id) {
-		Optional<Faturamento> findById = faturamentoRepository.findById(id);
+		Optional<Faturamento> findById = faturamentoService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -57,22 +79,23 @@ public class FaturamentoController {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Faturamento adicionar(@Valid @RequestBody Faturamento entity) {
-		return faturamentoRepository.save(entity);
+		return faturamentoService.save(entity);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Faturamento> excluir(@PathVariable Long id) {
-		Optional<Faturamento> findById = faturamentoRepository.findById(id);
+		Optional<Faturamento> findById = faturamentoService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		faturamentoRepository.delete(findById.get());
+		faturamentoService.delete(findById.get());
 		return new ResponseEntity<Faturamento>(HttpStatus.NO_CONTENT);
 	}
+	
 
 	@GetMapping("/condominio/{id}")
 	public ResponseEntity<List<Faturamento>> buscarPorCondominio(@PathVariable("id") Long id) {
-		Optional<List<Faturamento>> findById = faturamentoRepository.findByCondominioId(id);
+		Optional<List<Faturamento>> findById = faturamentoService.findByCondominioId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {
@@ -83,4 +106,6 @@ public class FaturamentoController {
 		return ResponseEntity.ok(findById.get());
 	}
 
+
 }
+

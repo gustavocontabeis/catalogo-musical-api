@@ -8,8 +8,11 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Morador;
+import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
 import br.com.codersistemas.condominiosadm.repository.MoradorRepository;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/moradores")
-public class MoradorController {
+public class MoradorController  extends BaseController<Morador> {
 	
 	@Autowired
 	private MoradorRepository moradorRepository;
@@ -48,6 +52,22 @@ public class MoradorController {
 		return findAll;
 	}
 
+	@PostMapping("/page")
+	public Page<Morador> listar(@RequestBody LazyLoadEvent event) {
+		log.info("{}", event);
+		Specification<Morador> specification = createSpecification(event);
+		PageRequest pageRequest = getPageRequest(event);
+		Page<Morador> findAll = moradorRepository.findAll(specification, pageRequest);
+		findAll.getContent().forEach(obj -> {
+			obj.getApartamento().setBloco(null);
+			obj.getApartamento().setMoradores(null);
+			obj.getApartamento().setProprietario(null);
+			obj.getApartamento().setTitular(null);
+			//ReflectionUtils.mapToBasicDTO(obj);
+		});
+		return findAll;
+	}
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<Morador> buscar(@PathVariable Long id) {
 		Optional<Morador> findById = moradorRepository.findById(id);

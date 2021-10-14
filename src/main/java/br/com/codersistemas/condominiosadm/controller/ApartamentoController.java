@@ -7,8 +7,13 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Apartamento;
+import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
 import br.com.codersistemas.condominiosadm.repository.ApartamentoRepository;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/apartamentos")
-public class ApartamentoController {
+public class ApartamentoController extends BaseController<Apartamento> {
 	
 	@Autowired
 	private ApartamentoRepository apartamentoRepository;
@@ -44,6 +50,23 @@ public class ApartamentoController {
 		});
 		return findAll;
 	}
+	
+	@PostMapping("/page")
+	public Page<Apartamento> listar(@RequestBody LazyLoadEvent event) {
+		log.info("{}", event);
+		Specification<Apartamento> specification = createSpecification(event);
+		PageRequest pageRequest = getPageRequest(event);
+		Page<Apartamento> findAll = apartamentoRepository.findAll(specification, pageRequest);
+		findAll.getContent().forEach(obj -> {
+			obj.setMoradores(null);
+			obj.getBloco().setApartamentos(null);
+			obj.getBloco().setCondominio(null);
+			obj.getBloco().setApartamentos(null);
+			//ReflectionUtils.mapToBasicDTO(obj);
+		});
+		return findAll;
+	}
+
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Apartamento> buscar(@PathVariable Long id) {
@@ -71,6 +94,19 @@ public class ApartamentoController {
 	}
 	
 
+	@GetMapping("/bloco/{id}")
+	public ResponseEntity<List<Apartamento>> buscarPorBloco(@PathVariable("id") Long id) {
+		Optional<List<Apartamento>> findById = apartamentoRepository.findByBlocoId(id);
+		if(!findById.isPresent()) {
+			return ResponseEntity.ok(Collections.EMPTY_LIST);
+		}else {
+			findById.get().forEach(obj -> {
+				ReflectionUtils.mapToBasicDTO(obj);
+			});
+		}
+		return ResponseEntity.ok(findById.get());
+	}
+
 	@GetMapping("/proprietario/{id}")
 	public ResponseEntity<List<Apartamento>> buscarPorProprietario(@PathVariable("id") Long id) {
 		Optional<List<Apartamento>> findById = apartamentoRepository.findByProprietarioId(id);
@@ -97,4 +133,6 @@ public class ApartamentoController {
 		return ResponseEntity.ok(findById.get());
 	}
 
+
 }
+

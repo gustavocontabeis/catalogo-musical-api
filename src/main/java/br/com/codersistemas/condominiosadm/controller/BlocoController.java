@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -51,31 +52,22 @@ public class BlocoController extends BaseController {
 	}
 
 	@PostMapping("/page")
-	public org.springframework.data.domain.Page<Bloco> listar(@RequestBody LazyLoadEvent event) {
-		
+	public Page<Bloco> listar(@RequestBody LazyLoadEvent event) {
 		log.info("{}", event);
-		
-		if(event.getGlobalFilter() != null) {
-			for(FilterItem fi : event.getGlobalFilter()) {
-				fi.getName();
-				fi.getValue();
-			}
-		}
-		
-		
-		
-		PageRequest pageRequest = PageRequest.of(event.getPage(), event.getRows(), getSort(event));
-		org.springframework.data.jpa.domain.Specification x;
-		Page<Bloco> findAll = blocoRepository.findAll(pageRequest);
+		Specification<Bloco> specification = createSpecification(event);
+		PageRequest pageRequest = getPageRequest(event);
+		Page<Bloco> findAll = blocoRepository.findAll(specification, pageRequest);
 		findAll.getContent().forEach(obj -> {
-			obj.getCondominio().setBlocos(null);
+			obj.setApartamentos(null);
 			obj.getCondominio().setFaturamentos(null);
+			obj.getCondominio().setBlocos(null);
 			obj.getCondominio().setSindico(null);
-			//ReflectionUtils.mapToBasicDTO(obj);
+			
+			// ReflectionUtils.mapToBasicDTO(obj);
 		});
-		
 		return findAll;
 	}
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<Bloco> buscar(@PathVariable Long id) {
 		Optional<Bloco> findById = blocoRepository.findById(id);
