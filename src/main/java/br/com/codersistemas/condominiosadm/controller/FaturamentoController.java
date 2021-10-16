@@ -1,6 +1,5 @@
 package br.com.codersistemas.condominiosadm.controller;
 
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +44,7 @@ public class FaturamentoController extends BaseController<Faturamento> {
 	@GetMapping
 	public List<Faturamento> listar() {
 		log.debug("listar!");
-		List<Faturamento> findAll = faturamentoService.findAll(Sort.by(Order.asc("nome"))); 
+		List<Faturamento> findAll = faturamentoService.findAll(Sort.by(Order.asc("id"))); 
 		findAll.forEach(obj -> {
 			ReflectionUtils.mapToBasicDTO(obj);
 		});
@@ -73,7 +72,10 @@ public class FaturamentoController extends BaseController<Faturamento> {
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(findById.get());
+		Faturamento body = findById.get();
+		body.setBoletos(null);
+		body.setCondominio(null);
+		return ResponseEntity.ok(body);
 	}
 	
 	@PostMapping

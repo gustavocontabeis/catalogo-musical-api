@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Banco;
-import br.com.codersistemas.condominiosadm.repository.BancoRepository;
+import br.com.codersistemas.condominiosadm.service.BancoService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,12 +33,12 @@ import lombok.extern.slf4j.Slf4j;
 public class BancoController {
 	
 	@Autowired
-	private BancoRepository bancoRepository;
+	private BancoService bancoService;
 	
 	@GetMapping
 	public List<Banco> listar() {
 		log.debug("listar!");
-		List<Banco> findAll = bancoRepository.findAll(Sort.by(Order.asc("nome"))); 
+		List<Banco> findAll = bancoService.findAll(Sort.by(Order.asc("nome"))); 
 		findAll.forEach(obj -> {
 			ReflectionUtils.mapToBasicDTO(obj);
 		});
@@ -47,7 +47,7 @@ public class BancoController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Banco> buscar(@PathVariable Long id) {
-		Optional<Banco> findById = bancoRepository.findById(id);
+		Optional<Banco> findById = bancoService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -57,22 +57,22 @@ public class BancoController {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Banco adicionar(@Valid @RequestBody Banco entity) {
-		return bancoRepository.save(entity);
+		return bancoService.save(entity);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Banco> excluir(@PathVariable Long id) {
-		Optional<Banco> findById = bancoRepository.findById(id);
+		Optional<Banco> findById = bancoService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		bancoRepository.delete(findById.get());
+		bancoService.delete(findById.get());
 		return new ResponseEntity<Banco>(HttpStatus.NO_CONTENT);
 	}
 
 	@GetMapping("/condominio/{id}")
 	public ResponseEntity<List<Banco>> buscarPorCondominio(@PathVariable("id") Long id) {
-		Optional<List<Banco>> findById = bancoRepository.findByCondominioId(id);
+		Optional<List<Banco>> findById = bancoService.findByCondominioId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {

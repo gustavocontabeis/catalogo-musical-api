@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Pessoa;
-import br.com.codersistemas.condominiosadm.repository.PessoaRepository;
+import br.com.codersistemas.condominiosadm.service.PessoaService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,12 +32,12 @@ import lombok.extern.slf4j.Slf4j;
 public class PessoaController {
 	
 	@Autowired
-	private PessoaRepository pessoaRepository;
+	private PessoaService pessoaService;
 	
 	@GetMapping
 	public List<Pessoa> listar() {
 		log.debug("listar!");
-		List<Pessoa> findAll = pessoaRepository.findAll(Sort.by(Order.asc("nome"))); 
+		List<Pessoa> findAll = pessoaService.findAll(Sort.by(Order.asc("nome"))); 
 		findAll.forEach(obj -> {
 			ReflectionUtils.mapToBasicDTO(obj);
 		});
@@ -46,7 +46,7 @@ public class PessoaController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Pessoa> buscar(@PathVariable Long id) {
-		Optional<Pessoa> findById = pessoaRepository.findById(id);
+		Optional<Pessoa> findById = pessoaService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -56,16 +56,16 @@ public class PessoaController {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Pessoa adicionar(@Valid @RequestBody Pessoa entity) {
-		return pessoaRepository.save(entity);
+		return pessoaService.save(entity);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Pessoa> excluir(@PathVariable Long id) {
-		Optional<Pessoa> findById = pessoaRepository.findById(id);
+		Optional<Pessoa> findById = pessoaService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		pessoaRepository.delete(findById.get());
+		pessoaService.delete(findById.get());
 		return new ResponseEntity<Pessoa>(HttpStatus.NO_CONTENT);
 	}
 

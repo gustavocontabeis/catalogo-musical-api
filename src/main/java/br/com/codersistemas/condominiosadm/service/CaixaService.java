@@ -1,32 +1,78 @@
 package br.com.codersistemas.condominiosadm.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.codersistemas.condominiosadm.domain.Caixa;
-import br.com.codersistemas.condominiosadm.domain.Condominio;
 import br.com.codersistemas.condominiosadm.repository.CaixaRepository;
+import br.com.codersistemas.condominiosadm.repository.CentroDeCustoRepository;
+import br.com.codersistemas.condominiosadm.repository.CondominioRepository;
+import br.com.codersistemas.condominiosadm.repository.PessoaRepository;
 
 @Service
 public class CaixaService {
-	
+
 	@Autowired
 	private CaixaRepository caixaRepository;
+
+	@Autowired
+	private CondominioRepository condominioRepository;
 	
-	public Caixa save(Caixa caixa) {
-		Condominio condominio = caixa.getCondominio();
-		Caixa last = findLast(condominio);
-		caixa.setSaldo(last.getSaldo().add(caixa.getValor()));
-		save(caixa);
-		return caixa;
+	@Autowired
+	private PessoaRepository pessoaRepository;
+	
+	@Autowired
+	private CentroDeCustoRepository centroDeCustoRepository;
+	
+	@Transactional(readOnly = true)
+	public List<Caixa> findAll(Sort by) {
+		return caixaRepository.findAll(by);
 	}
 
-	private Caixa findLast(Condominio condominio) {
-		return caixaRepository.findLast(condominio);
+	@Transactional(readOnly = true)
+	public Page<Caixa> findAll(Specification<Caixa> specification, PageRequest pageRequest) {
+		return caixaRepository.findAll(specification, pageRequest);
 	}
 
-	private Caixa saves(Caixa caixa) {
-		return caixaRepository.save(caixa);
+	@Transactional(readOnly = true)
+	public Optional<Caixa> findById(Long id) {
+		return caixaRepository.findById(id);
+	}
+
+	@Transactional(readOnly = true)
+	public Caixa save(@Valid Caixa entity) {
+		return caixaRepository.save(entity);
+	}
+
+	@Transactional(readOnly = true)
+	public void delete(Caixa caixa) {
+		caixaRepository.delete(caixa);		
+	}
+
+	@Transactional(readOnly = true)
+	public Optional<List<Caixa>> findByCondominioId(Long id){
+		return caixaRepository.findByCondominioId(id);
+	}
+
+	@Transactional(readOnly = true)
+	public Optional<List<Caixa>> findByPessoaId(Long id){
+		return caixaRepository.findByPessoaId(id);
+	}
+
+	@Transactional(readOnly = true)
+	public Optional<List<Caixa>> findByCentroDeCustoId(Long id){
+		return caixaRepository.findByCentroDeCustoId(id);
 	}
 
 }
+

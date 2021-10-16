@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Caixa;
-import br.com.codersistemas.condominiosadm.repository.CaixaRepository;
+import br.com.codersistemas.condominiosadm.service.CaixaService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,14 +33,14 @@ import lombok.extern.slf4j.Slf4j;
 public class CaixaController {
 	
 	@Autowired
-	private CaixaRepository caixaRepository;
+	private CaixaService caixaService;
 	
 	//declaracoes
 	
 	@GetMapping
 	public List<Caixa> listar() {
 		log.debug("listar!");
-		List<Caixa> findAll = caixaRepository.findAll(Sort.by(Order.asc("nome"))); 
+		List<Caixa> findAll = caixaService.findAll(Sort.by(Order.asc("id"))); 
 		findAll.forEach(obj -> {
 			ReflectionUtils.mapToBasicDTO(obj);
 		});
@@ -49,7 +49,7 @@ public class CaixaController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Caixa> buscar(@PathVariable Long id) {
-		Optional<Caixa> findById = caixaRepository.findById(id);
+		Optional<Caixa> findById = caixaService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -59,23 +59,23 @@ public class CaixaController {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Caixa adicionar(@Valid @RequestBody Caixa entity) {
-		return caixaRepository.save(entity);
+		return caixaService.save(entity);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Caixa> excluir(@PathVariable Long id) {
-		Optional<Caixa> findById = caixaRepository.findById(id);
+		Optional<Caixa> findById = caixaService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		caixaRepository.delete(findById.get());
+		caixaService.delete(findById.get());
 		return new ResponseEntity<Caixa>(HttpStatus.NO_CONTENT);
 	}
 	
 
 	@GetMapping("/condominio/{id}")
 	public ResponseEntity<List<Caixa>> buscarPorCondominio(@PathVariable("id") Long id) {
-		Optional<List<Caixa>> findById = caixaRepository.findByCondominioId(id);
+		Optional<List<Caixa>> findById = caixaService.findByCondominioId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {
@@ -88,7 +88,7 @@ public class CaixaController {
 
 	@GetMapping("/pessoa/{id}")
 	public ResponseEntity<List<Caixa>> buscarPorPessoa(@PathVariable("id") Long id) {
-		Optional<List<Caixa>> findById = caixaRepository.findByPessoaId(id);
+		Optional<List<Caixa>> findById = caixaService.findByPessoaId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {
@@ -101,7 +101,7 @@ public class CaixaController {
 
 	@GetMapping("/centroDeCusto/{id}")
 	public ResponseEntity<List<Caixa>> buscarPorCentroDeCusto(@PathVariable("id") Long id) {
-		Optional<List<Caixa>> findById = caixaRepository.findByCentroDeCustoId(id);
+		Optional<List<Caixa>> findById = caixaService.findByCentroDeCustoId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {

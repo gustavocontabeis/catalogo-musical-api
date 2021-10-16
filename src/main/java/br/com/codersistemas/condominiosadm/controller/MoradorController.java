@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Morador;
 import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
-import br.com.codersistemas.condominiosadm.repository.MoradorRepository;
+import br.com.codersistemas.condominiosadm.service.MoradorService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,14 +38,14 @@ import lombok.extern.slf4j.Slf4j;
 public class MoradorController  extends BaseController<Morador> {
 	
 	@Autowired
-	private MoradorRepository moradorRepository;
+	private MoradorService moradorService;
 	
 	//declaracoes
 	
 	@GetMapping
 	public List<Morador> listar() {
 		log.debug("listar!");
-		List<Morador> findAll = moradorRepository.findAll(Sort.by(Order.asc("nome"))); 
+		List<Morador> findAll = moradorService.findAll(Sort.by(Order.asc("nome"))); 
 		findAll.forEach(obj -> {
 			ReflectionUtils.mapToBasicDTO(obj);
 		});
@@ -57,7 +57,7 @@ public class MoradorController  extends BaseController<Morador> {
 		log.info("{}", event);
 		Specification<Morador> specification = createSpecification(event);
 		PageRequest pageRequest = getPageRequest(event);
-		Page<Morador> findAll = moradorRepository.findAll(specification, pageRequest);
+		Page<Morador> findAll = moradorService.findAll(specification, pageRequest);
 		findAll.getContent().forEach(obj -> {
 			obj.getApartamento().setBloco(null);
 			obj.getApartamento().setMoradores(null);
@@ -70,7 +70,7 @@ public class MoradorController  extends BaseController<Morador> {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Morador> buscar(@PathVariable Long id) {
-		Optional<Morador> findById = moradorRepository.findById(id);
+		Optional<Morador> findById = moradorService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -80,23 +80,23 @@ public class MoradorController  extends BaseController<Morador> {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Morador adicionar(@Valid @RequestBody Morador entity) {
-		return moradorRepository.save(entity);
+		return moradorService.save(entity);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Morador> excluir(@PathVariable Long id) {
-		Optional<Morador> findById = moradorRepository.findById(id);
+		Optional<Morador> findById = moradorService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		moradorRepository.delete(findById.get());
+		moradorService.delete(findById.get());
 		return new ResponseEntity<Morador>(HttpStatus.NO_CONTENT);
 	}
 	
 
 	@GetMapping("/pessoa/{id}")
 	public ResponseEntity<List<Morador>> buscarPorPessoa(@PathVariable("id") Long id) {
-		Optional<List<Morador>> findById = moradorRepository.findByPessoaId(id);
+		Optional<List<Morador>> findById = moradorService.findByPessoaId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {
@@ -109,7 +109,7 @@ public class MoradorController  extends BaseController<Morador> {
 
 	@GetMapping("/apartamento/{id}")
 	public ResponseEntity<List<Morador>> buscarPorApartamento(@PathVariable("id") Long id) {
-		Optional<List<Morador>> findById = moradorRepository.findByApartamentoId(id);
+		Optional<List<Morador>> findById = moradorService.findByApartamentoId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {

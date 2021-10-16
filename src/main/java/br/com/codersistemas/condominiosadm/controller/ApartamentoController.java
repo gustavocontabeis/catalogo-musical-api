@@ -7,8 +7,6 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Apartamento;
 import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
-import br.com.codersistemas.condominiosadm.repository.ApartamentoRepository;
+import br.com.codersistemas.condominiosadm.service.ApartamentoService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,12 +37,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ApartamentoController extends BaseController<Apartamento> {
 	
 	@Autowired
-	private ApartamentoRepository apartamentoRepository;
+	private ApartamentoService apartamentoService;
 	
 	@GetMapping
 	public List<Apartamento> listar() {
 		log.debug("listar!");
-		List<Apartamento> findAll = apartamentoRepository.findAll(Sort.by(Order.asc("nome"))); 
+		List<Apartamento> findAll = apartamentoService.findAll(Sort.by(Order.asc("nome"))); 
 		findAll.forEach(obj -> {
 			ReflectionUtils.mapToBasicDTO(obj);
 		});
@@ -56,7 +54,7 @@ public class ApartamentoController extends BaseController<Apartamento> {
 		log.info("{}", event);
 		Specification<Apartamento> specification = createSpecification(event);
 		PageRequest pageRequest = getPageRequest(event);
-		Page<Apartamento> findAll = apartamentoRepository.findAll(specification, pageRequest);
+		Page<Apartamento> findAll = apartamentoService.findAll(specification, pageRequest);
 		findAll.getContent().forEach(obj -> {
 			obj.setMoradores(null);
 			obj.getBloco().setApartamentos(null);
@@ -70,7 +68,7 @@ public class ApartamentoController extends BaseController<Apartamento> {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Apartamento> buscar(@PathVariable Long id) {
-		Optional<Apartamento> findById = apartamentoRepository.findById(id);
+		Optional<Apartamento> findById = apartamentoService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -80,23 +78,23 @@ public class ApartamentoController extends BaseController<Apartamento> {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Apartamento adicionar(@Valid @RequestBody Apartamento entity) {
-		return apartamentoRepository.save(entity);
+		return apartamentoService.save(entity);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Apartamento> excluir(@PathVariable Long id) {
-		Optional<Apartamento> findById = apartamentoRepository.findById(id);
+		Optional<Apartamento> findById = apartamentoService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		apartamentoRepository.delete(findById.get());
+		apartamentoService.delete(findById.get());
 		return new ResponseEntity<Apartamento>(HttpStatus.NO_CONTENT);
 	}
 	
 
 	@GetMapping("/bloco/{id}")
 	public ResponseEntity<List<Apartamento>> buscarPorBloco(@PathVariable("id") Long id) {
-		Optional<List<Apartamento>> findById = apartamentoRepository.findByBlocoId(id);
+		Optional<List<Apartamento>> findById = apartamentoService.findByBlocoId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {
@@ -109,7 +107,7 @@ public class ApartamentoController extends BaseController<Apartamento> {
 
 	@GetMapping("/proprietario/{id}")
 	public ResponseEntity<List<Apartamento>> buscarPorProprietario(@PathVariable("id") Long id) {
-		Optional<List<Apartamento>> findById = apartamentoRepository.findByProprietarioId(id);
+		Optional<List<Apartamento>> findById = apartamentoService.findByProprietarioId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {
@@ -122,7 +120,7 @@ public class ApartamentoController extends BaseController<Apartamento> {
 
 	@GetMapping("/titular/{id}")
 	public ResponseEntity<List<Apartamento>> buscarPorTitular(@PathVariable("id") Long id) {
-		Optional<List<Apartamento>> findById = apartamentoRepository.findByTitularId(id);
+		Optional<List<Apartamento>> findById = apartamentoService.findByTitularId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {

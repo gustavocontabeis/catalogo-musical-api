@@ -25,10 +25,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Bloco;
-import br.com.codersistemas.condominiosadm.dto.FilterItem;
 import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
-import br.com.codersistemas.condominiosadm.repository.BlocoRepository;
-import br.com.codersistemas.condominiosadm.specification.BlocoSpecification;
+import br.com.codersistemas.condominiosadm.service.BlocoService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,12 +37,12 @@ import lombok.extern.slf4j.Slf4j;
 public class BlocoController extends BaseController {
 	
 	@Autowired
-	private BlocoRepository blocoRepository;
+	private BlocoService blocoService;
 	
 	@GetMapping
 	public List<Bloco> listar() {
 		log.debug("listar!");
-		List<Bloco> findAll = blocoRepository.findAll(Sort.by(Order.asc("nome"))); 
+		List<Bloco> findAll = blocoService.findAll(Sort.by(Order.asc("nome"))); 
 		findAll.forEach(obj -> {
 			ReflectionUtils.mapToBasicDTO(obj);
 		});
@@ -56,7 +54,7 @@ public class BlocoController extends BaseController {
 		log.info("{}", event);
 		Specification<Bloco> specification = createSpecification(event);
 		PageRequest pageRequest = getPageRequest(event);
-		Page<Bloco> findAll = blocoRepository.findAll(specification, pageRequest);
+		Page<Bloco> findAll = blocoService.findAll(specification, pageRequest);
 		findAll.getContent().forEach(obj -> {
 			obj.setApartamentos(null);
 			obj.getCondominio().setFaturamentos(null);
@@ -70,7 +68,7 @@ public class BlocoController extends BaseController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Bloco> buscar(@PathVariable Long id) {
-		Optional<Bloco> findById = blocoRepository.findById(id);
+		Optional<Bloco> findById = blocoService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -80,23 +78,23 @@ public class BlocoController extends BaseController {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Bloco adicionar(@Valid @RequestBody Bloco entity) {
-		return blocoRepository.save(entity);
+		return blocoService.save(entity);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Bloco> excluir(@PathVariable Long id) {
-		Optional<Bloco> findById = blocoRepository.findById(id);
+		Optional<Bloco> findById = blocoService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		blocoRepository.delete(findById.get());
+		blocoService.delete(findById.get());
 		return new ResponseEntity<Bloco>(HttpStatus.NO_CONTENT);
 	}
 	
 
 	@GetMapping("/condominio/{id}")
 	public ResponseEntity<List<Bloco>> buscarPorCondominio(@PathVariable("id") Long id) {
-		Optional<List<Bloco>> findById = blocoRepository.findByCondominioId(id);
+		Optional<List<Bloco>> findById = blocoService.findByCondominioId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {

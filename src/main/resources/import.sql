@@ -1,3 +1,10 @@
+INSERT INTO public.centro_de_custo (id_centro_de_custo, nome) values (nextval('public.seq_centro_de_custo'), 'Recebimento de Condominios');
+INSERT INTO public.centro_de_custo (id_centro_de_custo, nome) values (nextval('public.seq_centro_de_custo'), 'Despesa com impostos');
+INSERT INTO public.centro_de_custo (id_centro_de_custo, nome) values (nextval('public.seq_centro_de_custo'), 'Despesa com manutenção');
+INSERT INTO public.centro_de_custo (id_centro_de_custo, nome) values (nextval('public.seq_centro_de_custo'), 'Despesa com funcionarios');
+INSERT INTO public.centro_de_custo (id_centro_de_custo, nome) values (nextval('public.seq_centro_de_custo'), 'Despesa com eletricidade');
+INSERT INTO public.centro_de_custo (id_centro_de_custo, nome) values (nextval('public.seq_centro_de_custo'), 'Despesa com limpeza');
+INSERT INTO public.centro_de_custo (id_centro_de_custo, nome) values (nextval('public.seq_centro_de_custo'), 'Despesa com piscina');
 INSERT INTO public.pessoa (id_pessoa, cpf, genero, nascimento, nome) values (nextval('public.seq_pessoa'), '901.687.800-97', 'MASCULINO', '1978-08-26', 'Gustavo da Silva');
 INSERT INTO public.sindico(id_sindico, ate, de, id_pessoa)VALUES(nextval('public.seq_sindico'), null, '2020-01-01', currval('public.seq_pessoa'));
 INSERT INTO public.condominio (id_condominio, nome, logradouro, numero, bairro, cidade, id_sindico) values (nextval('public.seq_condominio'),'Arcos da Sierra del Mar', 'Rua Vicente Monteggia', '2132', 'Vila São José', 'Relvado', currval('public.seq_pessoa'));

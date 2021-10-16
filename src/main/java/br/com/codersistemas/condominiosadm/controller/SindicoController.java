@@ -38,9 +38,9 @@ public class SindicoController {
 	@GetMapping
 	public List<Sindico> listar() {
 		log.debug("listar!");
-		List<Sindico> findAll = sindicoRepository.findAll(Sort.by(Order.asc("nome"))); 
+		List<Sindico> findAll = sindicoRepository.findAll(Sort.by(Order.asc("pessoa.nome"))); 
 		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
+			//ReflectionUtils.mapToBasicDTO(obj);
 		});
 		return findAll;
 	}
@@ -51,7 +51,8 @@ public class SindicoController {
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(findById.get());
+		Sindico body = findById.get();
+		return ResponseEntity.ok(body);
 	}
 	
 	@PostMapping

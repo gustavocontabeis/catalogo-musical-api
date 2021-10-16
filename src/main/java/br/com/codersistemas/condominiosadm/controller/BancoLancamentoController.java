@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.BancoLancamento;
-import br.com.codersistemas.condominiosadm.repository.BancoLancamentoRepository;
+import br.com.codersistemas.condominiosadm.service.BancoLancamentoService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,12 +33,12 @@ import lombok.extern.slf4j.Slf4j;
 public class BancoLancamentoController {
 	
 	@Autowired
-	private BancoLancamentoRepository bancoLancamentoRepository;
+	private BancoLancamentoService bancoLancamentoService;
 	
 	@GetMapping
 	public List<BancoLancamento> listar() {
 		log.debug("listar!");
-		List<BancoLancamento> findAll = bancoLancamentoRepository.findAll(Sort.by(Order.asc("nome"))); 
+		List<BancoLancamento> findAll = bancoLancamentoService.findAll(Sort.by(Order.asc("nome"))); 
 		findAll.forEach(obj -> {
 			ReflectionUtils.mapToBasicDTO(obj);
 		});
@@ -47,7 +47,7 @@ public class BancoLancamentoController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<BancoLancamento> buscar(@PathVariable Long id) {
-		Optional<BancoLancamento> findById = bancoLancamentoRepository.findById(id);
+		Optional<BancoLancamento> findById = bancoLancamentoService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -57,23 +57,23 @@ public class BancoLancamentoController {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public BancoLancamento adicionar(@Valid @RequestBody BancoLancamento entity) {
-		return bancoLancamentoRepository.save(entity);
+		return bancoLancamentoService.save(entity);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<BancoLancamento> excluir(@PathVariable Long id) {
-		Optional<BancoLancamento> findById = bancoLancamentoRepository.findById(id);
+		Optional<BancoLancamento> findById = bancoLancamentoService.findById(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		bancoLancamentoRepository.delete(findById.get());
+		bancoLancamentoService.delete(findById.get());
 		return new ResponseEntity<BancoLancamento>(HttpStatus.NO_CONTENT);
 	}
 	
 
 	@GetMapping("/banco/{id}")
 	public ResponseEntity<List<BancoLancamento>> buscarPorBanco(@PathVariable("id") Long id) {
-		Optional<List<BancoLancamento>> findById = bancoLancamentoRepository.findByBancoId(id);
+		Optional<List<BancoLancamento>> findById = bancoLancamentoService.findByBancoId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {
@@ -86,7 +86,7 @@ public class BancoLancamentoController {
 
 	@GetMapping("/centroDeCusto/{id}")
 	public ResponseEntity<List<BancoLancamento>> buscarPorCentroDeCusto(@PathVariable("id") Long id) {
-		Optional<List<BancoLancamento>> findById = bancoLancamentoRepository.findByCentroDeCustoId(id);
+		Optional<List<BancoLancamento>> findById = bancoLancamentoService.findByCentroDeCustoId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}else {
