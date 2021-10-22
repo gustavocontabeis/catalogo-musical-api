@@ -17,7 +17,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,10 +44,12 @@ public class Boleto implements Serializable {
 	@Column(name = "id_boleto", nullable = false)
 	private Long id;
 
+	@JsonIgnoreProperties({"moradores"})
 	@ManyToOne
 	@JoinColumn(name = "id_apartamento", nullable = false) // @ForeignKey(name="Boleto_Apartamento_fk")
 	private Apartamento apartamento;
 
+	@JsonIgnoreProperties({"boletos"})
 	@ManyToOne
 	@JoinColumn(name = "id_faturamento", nullable = false) // @ForeignKey(name="Boleto_Faturamento_fk")
 	private Faturamento faturamento;

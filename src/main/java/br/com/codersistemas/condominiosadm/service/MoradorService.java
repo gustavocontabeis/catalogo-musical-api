@@ -45,12 +45,12 @@ public class MoradorService {
 		return moradorRepository.findById(id);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public Morador save(@Valid Morador entity) {
 		return moradorRepository.save(entity);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete(Morador morador) {
 		moradorRepository.delete(morador);		
 	}

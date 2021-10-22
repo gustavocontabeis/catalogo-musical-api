@@ -43,16 +43,17 @@ public class FaturamentoService {
 		return faturamentoRepository.findById(id);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public Faturamento save(@Valid Faturamento entity) {
 		return faturamentoRepository.save(entity);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete(Faturamento faturamento) {
 		faturamentoRepository.delete(faturamento);		
 	}
-
+	
+	@Transactional(readOnly = true)
 	public Optional<List<Faturamento>> findByCondominioId(Long id){
 		return faturamentoRepository.findByCondominioId(id);
 	}

@@ -40,12 +40,12 @@ public class PessoaService {
 		return pessoaRepository.findById(id);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public Pessoa save(@Valid Pessoa entity) {
 		return pessoaRepository.save(entity);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete(Pessoa pessoa) {
 		pessoaRepository.delete(pessoa);		
 	}

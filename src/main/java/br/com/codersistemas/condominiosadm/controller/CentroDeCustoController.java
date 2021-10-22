@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/centros-de-custos")
+@RequestMapping("/centro-de-custos")
 public class CentroDeCustoController extends BaseController<CentroDeCusto> {
 	
 	@Autowired
@@ -40,24 +40,14 @@ public class CentroDeCustoController extends BaseController<CentroDeCusto> {
 	
 	@GetMapping
 	public List<CentroDeCusto> listar() {
-		log.debug("listar!");
-		List<CentroDeCusto> findAll = centroDeCustoService.findAll(Sort.by(Order.asc("nome"))); 
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return centroDeCustoService.findAll(Sort.by(Order.asc("nome")));
 	}
 
 	@PostMapping("/page")
 	public Page<CentroDeCusto> listar(@RequestBody LazyLoadEvent event) {
-		log.info("{}", event);
 		Specification<CentroDeCusto> specification = createSpecification(event);
 		PageRequest pageRequest = getPageRequest(event);
-		Page<CentroDeCusto> findAll = centroDeCustoService.findAll(specification, pageRequest);
-		findAll.getContent().forEach(obj -> {
-			// ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return centroDeCustoService.findAll(specification, pageRequest);
 	}
 	
 	@GetMapping("/{id}")

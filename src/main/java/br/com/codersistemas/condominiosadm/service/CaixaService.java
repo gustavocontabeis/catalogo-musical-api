@@ -49,12 +49,13 @@ public class CaixaService {
 		return caixaRepository.findById(id);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public Caixa save(@Valid Caixa entity) {
+		entity.setCentroDeCusto(centroDeCustoRepository.findById(entity.getCentroDeCusto().getId()).get());
 		return caixaRepository.save(entity);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete(Caixa caixa) {
 		caixaRepository.delete(caixa);		
 	}

@@ -44,12 +44,12 @@ public class BancoLancamentoService {
 		return bancoLancamentoRepository.findById(id);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public BancoLancamento save(@Valid BancoLancamento entity) {
 		return bancoLancamentoRepository.save(entity);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete(BancoLancamento bancoLancamento) {
 		bancoLancamentoRepository.delete(bancoLancamento);
 	}

@@ -50,12 +50,12 @@ public class BoletoService {
 		return boletoRepository.findById(id);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public Boleto save(@Valid Boleto entity) {
 		return boletoRepository.save(entity);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete(Boleto boleto) {
 		boletoRepository.delete(boleto);		
 	}

@@ -46,9 +46,6 @@ public class MoradorController  extends BaseController<Morador> {
 	public List<Morador> listar() {
 		log.debug("listar!");
 		List<Morador> findAll = moradorService.findAll(Sort.by(Order.asc("nome"))); 
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
 		return findAll;
 	}
 
@@ -99,10 +96,6 @@ public class MoradorController  extends BaseController<Morador> {
 		Optional<List<Morador>> findById = moradorService.findByPessoaId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}
@@ -112,10 +105,6 @@ public class MoradorController  extends BaseController<Morador> {
 		Optional<List<Morador>> findById = moradorService.findByApartamentoId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}

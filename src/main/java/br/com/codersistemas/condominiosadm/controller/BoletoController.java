@@ -39,36 +39,16 @@ public class BoletoController extends BaseController<Boleto> {
 	@Autowired
 	private BoletoService boletoService;
 	
-	//declaracoes
-	
 	@GetMapping
 	public List<Boleto> listar() {
-		log.debug("listar!");
-		List<Boleto> findAll = boletoService.findAll(Sort.by(Order.asc("nome"))); 
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return boletoService.findAll(Sort.by(Order.desc("id")));
 	}
 	
 	@PostMapping("/page")
 	public Page<Boleto> listar(@RequestBody LazyLoadEvent event) {
-		log.info("{}", event);
 		Specification<Boleto> specification = createSpecification(event);
 		PageRequest pageRequest = getPageRequest(event);
-		Page<Boleto> findAll = boletoService.findAll(specification, pageRequest);
-		findAll.getContent().forEach(obj -> {
-			obj.getApartamento().setBloco(null);
-			obj.getApartamento().setMoradores(null);
-			obj.getApartamento().setProprietario(null);
-			obj.getApartamento().setTitular(null);
-			obj.getFaturamento().setBoletos(null);
-			obj.getFaturamento().getCondominio().setBlocos(null);
-			obj.getFaturamento().getCondominio().setFaturamentos(null);
-			obj.getFaturamento().getCondominio().setSindico(null);
-			// ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return boletoService.findAll(specification, pageRequest);
 	}
 
 	@GetMapping("/{id}")
@@ -95,17 +75,12 @@ public class BoletoController extends BaseController<Boleto> {
 		boletoService.delete(findById.get());
 		return new ResponseEntity<Boleto>(HttpStatus.NO_CONTENT);
 	}
-	
 
 	@GetMapping("/apartamento/{id}")
 	public ResponseEntity<List<Boleto>> buscarPorApartamento(@PathVariable("id") Long id) {
 		Optional<List<Boleto>> findById = boletoService.findByApartamentoId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}
@@ -115,10 +90,6 @@ public class BoletoController extends BaseController<Boleto> {
 		Optional<List<Boleto>> findById = boletoService.findByFaturamentoId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}
@@ -128,10 +99,6 @@ public class BoletoController extends BaseController<Boleto> {
 		Optional<List<Boleto>> findById = boletoService.findByTitularId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}

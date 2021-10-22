@@ -13,11 +13,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,13 +41,13 @@ public class BancoLancamento implements Serializable {
 	@Column(name = "id_banco_lancamento", nullable = false)
 	private Long id;
 
+	@JsonIgnoreProperties({"lancamentos"})
 	@ManyToOne
 	@JoinColumn(name = "id_banco", nullable = false) // @ForeignKey(name="BancoLancamento_Banco_fk")
 	private Banco banco;
 
 	@NotNull(message = "Data deve ser preenchido.")
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-	//@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data", length = 255, nullable = false)
 	private LocalDateTime data;
 

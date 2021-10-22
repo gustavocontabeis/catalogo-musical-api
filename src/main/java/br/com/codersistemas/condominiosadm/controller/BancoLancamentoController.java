@@ -7,8 +7,11 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.BancoLancamento;
+import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
 import br.com.codersistemas.condominiosadm.service.BancoLancamentoService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,19 +34,22 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/banco-lancamentos")
-public class BancoLancamentoController {
+public class BancoLancamentoController extends BaseController<BancoLancamento> {
 	
 	@Autowired
 	private BancoLancamentoService bancoLancamentoService;
 	
 	@GetMapping
 	public List<BancoLancamento> listar() {
-		log.debug("listar!");
-		List<BancoLancamento> findAll = bancoLancamentoService.findAll(Sort.by(Order.asc("nome"))); 
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return bancoLancamentoService.findAll(Sort.by(Order.asc("banco.id"), Order.asc("id")));
+	}
+	
+	@PostMapping("/page")
+	public Page<BancoLancamento> listar(@RequestBody LazyLoadEvent event) {
+		log.info("{}", event);
+		Specification<BancoLancamento> specification = createSpecification(event);
+		PageRequest pageRequest = getPageRequest(event);
+		return bancoLancamentoService.findAll(specification, pageRequest);
 	}
 
 	@GetMapping("/{id}")
@@ -97,4 +104,6 @@ public class BancoLancamentoController {
 		return ResponseEntity.ok(findById.get());
 	}
 
+
 }
+

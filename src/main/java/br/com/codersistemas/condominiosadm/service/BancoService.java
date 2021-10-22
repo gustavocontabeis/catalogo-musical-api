@@ -1,6 +1,5 @@
 package br.com.codersistemas.condominiosadm.service;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -43,17 +42,20 @@ public class BancoService {
 		return bancoRepository.findById(id);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public Banco save(@Valid Banco entity) {
+		entity.setCondominio(condominioRepository.findById(entity.getCondominio().getId()).get());
 		return bancoRepository.save(entity);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete(Banco banco) {
 		bancoRepository.delete(banco);		
 	}
 
-	@Transactional(readOnly = true)	public Optional<List<Banco>> findByCondominioId(Long id){
+
+	@Transactional(readOnly = true)
+	public Optional<List<Banco>> findByCondominioId(Long id){
 		return bancoRepository.findByCondominioId(id);
 	}
 

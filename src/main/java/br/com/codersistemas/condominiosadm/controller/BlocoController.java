@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.codersistemas.condominiosadm.domain.Bloco;
 import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
 import br.com.codersistemas.condominiosadm.service.BlocoService;
-import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -41,29 +40,14 @@ public class BlocoController extends BaseController {
 	
 	@GetMapping
 	public List<Bloco> listar() {
-		log.debug("listar!");
-		List<Bloco> findAll = blocoService.findAll(Sort.by(Order.asc("nome"))); 
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return blocoService.findAll(Sort.by(Order.asc("nome")));
 	}
 
 	@PostMapping("/page")
 	public Page<Bloco> listar(@RequestBody LazyLoadEvent event) {
-		log.info("{}", event);
 		Specification<Bloco> specification = createSpecification(event);
 		PageRequest pageRequest = getPageRequest(event);
-		Page<Bloco> findAll = blocoService.findAll(specification, pageRequest);
-		findAll.getContent().forEach(obj -> {
-			obj.setApartamentos(null);
-			obj.getCondominio().setFaturamentos(null);
-			obj.getCondominio().setBlocos(null);
-			obj.getCondominio().setSindico(null);
-			
-			// ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return blocoService.findAll(specification, pageRequest);
 	}
 	
 	@GetMapping("/{id}")
@@ -90,20 +74,14 @@ public class BlocoController extends BaseController {
 		blocoService.delete(findById.get());
 		return new ResponseEntity<Bloco>(HttpStatus.NO_CONTENT);
 	}
-	
 
 	@GetMapping("/condominio/{id}")
 	public ResponseEntity<List<Bloco>> buscarPorCondominio(@PathVariable("id") Long id) {
 		Optional<List<Bloco>> findById = blocoService.findByCondominioId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}
-
 
 }

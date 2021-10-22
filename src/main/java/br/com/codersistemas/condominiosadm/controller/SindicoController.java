@@ -77,10 +77,6 @@ public class SindicoController {
 		Optional<List<Sindico>> findById = sindicoRepository.findByPessoaId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}

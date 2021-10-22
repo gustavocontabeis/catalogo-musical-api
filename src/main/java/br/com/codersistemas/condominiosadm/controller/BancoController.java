@@ -1,5 +1,6 @@
 package br.com.codersistemas.condominiosadm.controller;
 
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -7,8 +8,11 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Banco;
+import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
 import br.com.codersistemas.condominiosadm.service.BancoService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,19 +35,25 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/bancos")
-public class BancoController {
+public class BancoController extends BaseController<Banco> {
 	
 	@Autowired
 	private BancoService bancoService;
 	
+	//declaracoes
+	
 	@GetMapping
 	public List<Banco> listar() {
 		log.debug("listar!");
-		List<Banco> findAll = bancoService.findAll(Sort.by(Order.asc("nome"))); 
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return bancoService.findAll(Sort.by(Order.asc("id")));
+	}
+	
+	@PostMapping("/page")
+	public Page<Banco> listar(@RequestBody LazyLoadEvent event) {
+		log.info("{}", event);
+		Specification<Banco> specification = createSpecification(event);
+		PageRequest pageRequest = getPageRequest(event);
+		return bancoService.findAll(specification, pageRequest);
 	}
 
 	@GetMapping("/{id}")
@@ -69,6 +80,7 @@ public class BancoController {
 		bancoService.delete(findById.get());
 		return new ResponseEntity<Banco>(HttpStatus.NO_CONTENT);
 	}
+	
 
 	@GetMapping("/condominio/{id}")
 	public ResponseEntity<List<Banco>> buscarPorCondominio(@PathVariable("id") Long id) {
@@ -82,6 +94,7 @@ public class BancoController {
 		}
 		return ResponseEntity.ok(findById.get());
 	}
+
 
 }
 

@@ -19,7 +19,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import br.com.codersistemas.condominiosadm.enums.TipoDocumento;
 import lombok.AllArgsConstructor;
@@ -42,7 +44,8 @@ public class Caixa implements Serializable {
 	@SequenceGenerator(name = "seq_caixa", initialValue = 1000, allocationSize = 1)
 	@Column(name = "id_caixa", nullable = false)
 	private Long id;
-
+	
+	@JsonIgnoreProperties({"blocos", "faturas"})
 	@ManyToOne
 	@JoinColumn(name = "id_condominio", nullable = false) // @ForeignKey(name="Caixa_Condominio_fk")
 	private Condominio condominio;

@@ -38,9 +38,6 @@ public class PessoaController {
 	public List<Pessoa> listar() {
 		log.debug("listar!");
 		List<Pessoa> findAll = pessoaService.findAll(Sort.by(Order.asc("nome"))); 
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
 		return findAll;
 	}
 

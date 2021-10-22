@@ -22,8 +22,6 @@ public class CentroDeCustoService {
 
 	@Autowired
 	private CentroDeCustoRepository centroDeCustoRepository;
-
-
 	
 	@Transactional(readOnly = true)
 	public List<CentroDeCusto> findAll(Sort by) {
@@ -40,12 +38,12 @@ public class CentroDeCustoService {
 		return centroDeCustoRepository.findById(id);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public CentroDeCusto save(@Valid CentroDeCusto entity) {
 		return centroDeCustoRepository.save(entity);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete(CentroDeCusto centroDeCusto) {
 		centroDeCustoRepository.delete(centroDeCusto);		
 	}

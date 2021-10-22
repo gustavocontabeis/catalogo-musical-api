@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.codersistemas.condominiosadm.domain.Apartamento;
 import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
 import br.com.codersistemas.condominiosadm.service.ApartamentoService;
-import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -41,12 +40,7 @@ public class ApartamentoController extends BaseController<Apartamento> {
 	
 	@GetMapping
 	public List<Apartamento> listar() {
-		log.debug("listar!");
-		List<Apartamento> findAll = apartamentoService.findAll(Sort.by(Order.asc("nome"))); 
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return apartamentoService.findAll(Sort.by(Order.asc("id")));
 	}
 	
 	@PostMapping("/page")
@@ -54,15 +48,7 @@ public class ApartamentoController extends BaseController<Apartamento> {
 		log.info("{}", event);
 		Specification<Apartamento> specification = createSpecification(event);
 		PageRequest pageRequest = getPageRequest(event);
-		Page<Apartamento> findAll = apartamentoService.findAll(specification, pageRequest);
-		findAll.getContent().forEach(obj -> {
-			obj.setMoradores(null);
-			obj.getBloco().setApartamentos(null);
-			obj.getBloco().setCondominio(null);
-			obj.getBloco().setApartamentos(null);
-			//ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return apartamentoService.findAll(specification, pageRequest);
 	}
 
 
@@ -97,10 +83,6 @@ public class ApartamentoController extends BaseController<Apartamento> {
 		Optional<List<Apartamento>> findById = apartamentoService.findByBlocoId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}
@@ -110,10 +92,6 @@ public class ApartamentoController extends BaseController<Apartamento> {
 		Optional<List<Apartamento>> findById = apartamentoService.findByProprietarioId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}
@@ -123,14 +101,9 @@ public class ApartamentoController extends BaseController<Apartamento> {
 		Optional<List<Apartamento>> findById = apartamentoService.findByTitularId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}
-
 
 }
 

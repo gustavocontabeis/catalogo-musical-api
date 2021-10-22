@@ -1,5 +1,6 @@
 package br.com.codersistemas.condominiosadm.controller;
 
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -7,8 +8,11 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Caixa;
+import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
 import br.com.codersistemas.condominiosadm.service.CaixaService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/caixas")
-public class CaixaController {
+public class CaixaController extends BaseController<Caixa> {
 	
 	@Autowired
 	private CaixaService caixaService;
@@ -40,11 +45,15 @@ public class CaixaController {
 	@GetMapping
 	public List<Caixa> listar() {
 		log.debug("listar!");
-		List<Caixa> findAll = caixaService.findAll(Sort.by(Order.asc("id"))); 
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return caixaService.findAll(Sort.by(Order.asc("nome")));
+	}
+	
+	@PostMapping("/page")
+	public Page<Caixa> listar(@RequestBody LazyLoadEvent event) {
+		log.info("{}", event);
+		Specification<Caixa> specification = createSpecification(event);
+		PageRequest pageRequest = getPageRequest(event);
+		return caixaService.findAll(specification, pageRequest);
 	}
 
 	@GetMapping("/{id}")
@@ -114,3 +123,4 @@ public class CaixaController {
 
 
 }
+

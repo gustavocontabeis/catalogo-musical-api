@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.com.codersistemas.condominiosadm.domain.Condominio;
 import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
 import br.com.codersistemas.condominiosadm.service.CondominioService;
@@ -40,33 +43,15 @@ public class CondominioController extends BaseController<Condominio> {
 	@GetMapping()
 	public List<Condominio> listar() {
 		List<Condominio> findAll = condominioService.findAll();
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
 		return findAll;
 	}
 
 	@PostMapping("/page")
 	public Page<Condominio> listar(@RequestBody LazyLoadEvent event) {
-
 		log.info("{}", event);
-
 		Specification<Condominio> specification = createSpecification(event);
-
 		PageRequest pageRequest = getPageRequest(event);
-
-		Page<Condominio> findAll = condominioService.findAll(specification, pageRequest);
-		for (Condominio obj : findAll) {
-		}
-		findAll.getContent().forEach(obj -> {
-			// obj.getSindico().getPessoa();
-			// ReflectionUtils.mapToBasicDTO(obj);
-			obj.setBlocos(null);
-			obj.setFaturamentos(null);
-			log.info("{}", obj.getNome());
-		});
-
-		return findAll;
+		return condominioService.findAll(specification, pageRequest);
 	}
 
 	@GetMapping("/{id}")
@@ -102,10 +87,6 @@ public class CondominioController extends BaseController<Condominio> {
 		Optional<List<Condominio>> findById = condominioService.findBySindicoId(id);
 		if (!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		} else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}

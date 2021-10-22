@@ -41,12 +41,12 @@ public class BlocoService {
 		return blocoRepository.findById(id);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public Bloco save(@Valid Bloco entity) {
 		return blocoRepository.save(entity);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete(Bloco bloco) {
 		blocoRepository.delete(bloco);		
 	}

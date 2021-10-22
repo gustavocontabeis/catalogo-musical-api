@@ -21,17 +21,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="centro_de_custo")
+@Table(name = "centro_de_custo")
 public class CentroDeCusto implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
 
-	@Id @GeneratedValue(generator="seq_centro_de_custo", strategy=GenerationType.SEQUENCE) @SequenceGenerator(name="seq_centro_de_custo", initialValue=1000, allocationSize=1) @Column(name="id_centro_de_custo", nullable=false) 
+	@Id
+	@GeneratedValue(generator = "seq_centro_de_custo", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "seq_centro_de_custo", initialValue = 1000, allocationSize = 1)
+	@Column(name = "id_centro_de_custo", nullable = false)
 	private Long id;
 
 	@NotNull(message = "Nome deve ser preenchido.")
-	@Column(name="nome", length=150, nullable=false)
+	@Column(name = "nome", length = 150, nullable = false)
 	private String nome;
 
 }
-

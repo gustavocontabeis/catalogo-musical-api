@@ -39,16 +39,9 @@ public class FaturamentoController extends BaseController<Faturamento> {
 	@Autowired
 	private FaturamentoService faturamentoService;
 	
-	//declaracoes
-	
 	@GetMapping
 	public List<Faturamento> listar() {
-		log.debug("listar!");
-		List<Faturamento> findAll = faturamentoService.findAll(Sort.by(Order.asc("id"))); 
-		findAll.forEach(obj -> {
-			ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return faturamentoService.findAll(Sort.by(Order.asc("id")));
 	}
 	
 	@PostMapping("/page")
@@ -56,14 +49,7 @@ public class FaturamentoController extends BaseController<Faturamento> {
 		log.info("{}", event);
 		Specification<Faturamento> specification = createSpecification(event);
 		PageRequest pageRequest = getPageRequest(event);
-		Page<Faturamento> findAll = faturamentoService.findAll(specification, pageRequest);
-		findAll.getContent().forEach(obj -> {
-			obj.setBoletos(null);
-			obj.getCondominio().setBlocos(null);
-			obj.getCondominio().setFaturamentos(null);
-			// ReflectionUtils.mapToBasicDTO(obj);
-		});
-		return findAll;
+		return faturamentoService.findAll(specification, pageRequest);
 	}
 
 	@GetMapping("/{id}")
@@ -72,10 +58,7 @@ public class FaturamentoController extends BaseController<Faturamento> {
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		Faturamento body = findById.get();
-		body.setBoletos(null);
-		body.setCondominio(null);
-		return ResponseEntity.ok(body);
+		return ResponseEntity.ok(findById.get());
 	}
 	
 	@PostMapping
@@ -93,21 +76,15 @@ public class FaturamentoController extends BaseController<Faturamento> {
 		faturamentoService.delete(findById.get());
 		return new ResponseEntity<Faturamento>(HttpStatus.NO_CONTENT);
 	}
-	
 
 	@GetMapping("/condominio/{id}")
 	public ResponseEntity<List<Faturamento>> buscarPorCondominio(@PathVariable("id") Long id) {
 		Optional<List<Faturamento>> findById = faturamentoService.findByCondominioId(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
-		}else {
-			findById.get().forEach(obj -> {
-				ReflectionUtils.mapToBasicDTO(obj);
-			});
 		}
 		return ResponseEntity.ok(findById.get());
 	}
-
 
 }
 

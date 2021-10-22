@@ -14,11 +14,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,15 +45,15 @@ public class Faturamento implements Serializable {
 
 	@NotNull(message = "Periodo deve ser preenchido.")
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	//@Temporal(TemporalType.DATE)
 	@Column(name = "periodo", nullable = false)
 	private LocalDate periodo;
 
+	@JsonIgnoreProperties({"blocos", "faturamentos", "sindico"})
 	@ManyToOne
 	@JoinColumn(name = "id_condominio", nullable = false)
-	// @ForeignKey(name = "Faturamento_Condominio_fk")
 	private Condominio condominio;
 
+	@JsonIgnoreProperties
 	@OneToMany(mappedBy = "faturamento")
 	private List<Boleto> boletos;
 

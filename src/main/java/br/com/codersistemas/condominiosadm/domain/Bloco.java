@@ -17,6 +17,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import br.com.codersistemas.condominiosadm.enums.TipoBloco;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +30,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@ToString(exclude = {"apartamentos"})
+@ToString(exclude = {"condominio", "apartamentos"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -51,9 +56,11 @@ public class Bloco implements Serializable {
 	private TipoBloco tipo;
 
 	@ManyToOne
+	@JsonIgnoreProperties({"faturamento", "blocos"})
 	@JoinColumn(name = "id_condominio", nullable = false) // @ForeignKey(name="Bloco_Condominio_fk")
 	private Condominio condominio;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "bloco")
 	private List<Apartamento> apartamentos;
 

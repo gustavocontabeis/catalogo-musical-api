@@ -6,6 +6,10 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,6 +33,7 @@ public class Apartamento implements Serializable {
 	  inverseJoinColumns = @JoinColumn(name = "id_pessoa"))
 	private List<Pessoa> moradores;
 
+	@JsonIgnoreProperties({"condominio", "apartamentos"})
 	@ManyToOne @JoinColumn(name="id_bloco", nullable=false)//, foreignKey = @ForeignKey(name="Apartamento_Bloco_fk"))
 	private Bloco bloco;
 

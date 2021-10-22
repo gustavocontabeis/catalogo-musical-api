@@ -47,12 +47,12 @@ public class ApartamentoService {
 		return apartamentoRepository.findById(id);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public Apartamento save(@Valid Apartamento entity) {
 		return apartamentoRepository.save(entity);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete(Apartamento apartamento) {
 		apartamentoRepository.delete(apartamento);		
 	}

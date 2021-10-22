@@ -6,6 +6,9 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,9 +48,11 @@ public class Condominio implements Serializable {
 	//@ForeignKey(name = "Condominio_sindico_fk")
 	private Sindico sindico;
 
+	@JsonIgnore
 	@OneToMany(mappedBy="condominio", fetch = FetchType.LAZY)
 	private List<Bloco> blocos;
 
+	@JsonIgnore
 	@OneToMany(mappedBy="condominio")
 	private List<Faturamento> faturamentos;
 

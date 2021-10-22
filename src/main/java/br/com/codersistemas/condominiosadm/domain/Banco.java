@@ -19,15 +19,20 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import br.com.codersistemas.condominiosadm.enums.TipoContabancaria;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"condominio", "lancamentos"})
 @Builder
 @Entity
 @Table(name = "banco")
@@ -41,12 +46,13 @@ public class Banco implements Serializable {
 	@Column(name = "id_banco", nullable = false)
 	private Long id;
 
+	@JsonIgnoreProperties({"blocos", "faturamentos"})
 	@ManyToOne
 	@JoinColumn(name = "id_condominio", nullable = false) // @ForeignKey(name="Banco_Condominio_fk")
 	private Condominio condominio;
 
-	@NotEmpty
-	@Column(name = "numero", nullable = true)
+	@NotNull()
+	@Column(name = "numero", nullable = false)
 	private Integer numero;
 
 	@NotNull(message = "Agencia deve ser preenchido.")
@@ -62,6 +68,7 @@ public class Banco implements Serializable {
 	@Column(length = 20, nullable = false)
 	private TipoContabancaria tipo;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "banco")
 	private List<BancoLancamento> lancamentos;
 
