@@ -78,6 +78,15 @@ public class ApartamentoController extends BaseController<Apartamento> {
 	}
 	
 
+	@GetMapping("/condominio/{id}")
+	public ResponseEntity<List<Apartamento>> buscarPorCondominio(@PathVariable("id") Long id) {
+		Optional<List<Apartamento>> findById = apartamentoService.findByBlocoCondominioId(id);
+		if(!findById.isPresent()) {
+			return ResponseEntity.ok(Collections.EMPTY_LIST);
+		}
+		return ResponseEntity.ok(findById.get());
+	}
+
 	@GetMapping("/bloco/{id}")
 	public ResponseEntity<List<Apartamento>> buscarPorBloco(@PathVariable("id") Long id) {
 		Optional<List<Apartamento>> findById = apartamentoService.findByBlocoId(id);

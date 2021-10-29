@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -53,7 +54,7 @@ public class Faturamento implements Serializable {
 	@JoinColumn(name = "id_condominio", nullable = false)
 	private Condominio condominio;
 
-	@JsonIgnoreProperties
+	@JsonIgnore
 	@OneToMany(mappedBy = "faturamento")
 	private List<Boleto> boletos;
 

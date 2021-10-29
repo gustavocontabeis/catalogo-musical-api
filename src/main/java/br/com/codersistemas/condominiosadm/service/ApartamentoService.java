@@ -72,6 +72,11 @@ public class ApartamentoService {
 	public Optional<List<Apartamento>> findByTitularId(Long id){
 		return apartamentoRepository.findByTitularId(id);
 	}
+	
+	@Transactional(readOnly = true)
+	public Optional<List<Apartamento>> findByBlocoCondominioId(Long id) {
+		return apartamentoRepository.findByBlocoCondominioId(id);
+	}
 
 }
 
