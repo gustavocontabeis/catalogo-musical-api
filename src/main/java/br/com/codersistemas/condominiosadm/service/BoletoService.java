@@ -1,6 +1,6 @@
 package br.com.codersistemas.condominiosadm.service;
 
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,13 +28,13 @@ public class BoletoService {
 
 	@Autowired
 	private ApartamentoRepository apartamentoRepository;
-	
+
 	@Autowired
 	private FaturamentoRepository faturamentoRepository;
-	
+
 	@Autowired
 	private PessoaRepository titularRepository;
-	
+
 	@Transactional(readOnly = true)
 	public List<Boleto> findAll(Sort by) {
 		return boletoRepository.findAll(by);
@@ -57,20 +57,37 @@ public class BoletoService {
 
 	@Transactional(readOnly = false)
 	public void delete(Boleto boleto) {
-		boletoRepository.delete(boleto);		
+		boletoRepository.delete(boleto);
 	}
 
-	@Transactional(readOnly = true)	public Optional<List<Boleto>> findByApartamentoId(Long id){
+	@Transactional(readOnly = true)
+	public Optional<List<Boleto>> findByApartamentoId(Long id) {
 		return boletoRepository.findByApartamentoId(id);
 	}
 
-	@Transactional(readOnly = true)	public Optional<List<Boleto>> findByFaturamentoId(Long id){
+	@Transactional(readOnly = true)
+	public Optional<List<Boleto>> findByFaturamentoId(Long id) {
 		return boletoRepository.findByFaturamentoId(id);
 	}
 
-	@Transactional(readOnly = true)	public Optional<List<Boleto>> findByTitularId(Long id){
+	@Transactional(readOnly = true)
+	public Optional<List<Boleto>> findByTitularId(Long id) {
 		return boletoRepository.findByTitularId(id);
 	}
 
-}
+	@Transactional(readOnly = false)
+	public Optional<Boleto> toPay(Long id) {
+		Optional<Boleto> findById = boletoRepository.findById(id);
+		if (findById.isPresent()) {
+			Boleto boleto = findById.get();
+			if (boleto.getPagamento() == null) {
+				boleto.setPagamento(LocalDate.now());
+				boleto.setTotal(boleto.getValor());
+				boletoRepository.save(boleto);
+			}
+			return Optional.of(boleto);
+		}
+		return null;
+	}
 
+}

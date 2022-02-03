@@ -1,5 +1,7 @@
 package br.com.codersistemas.condominiosadm.controller;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.codersistemas.condominiosadm.domain.Boleto;
 import br.com.codersistemas.condominiosadm.dto.LazyLoadEvent;
+import br.com.codersistemas.condominiosadm.dto.Totais;
 import br.com.codersistemas.condominiosadm.service.BoletoService;
 import br.com.codersistemas.libs.utils.ReflectionUtils;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -54,6 +58,15 @@ public class BoletoController extends BaseController<Boleto> {
 	@GetMapping("/{id}")
 	public ResponseEntity<Boleto> buscar(@PathVariable Long id) {
 		Optional<Boleto> findById = boletoService.findById(id);
+		if(!findById.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(findById.get());
+	}
+	
+	@GetMapping("/to-pay/{id}")
+	public ResponseEntity<Boleto> pagar(@PathVariable Long id) {
+		Optional<Boleto> findById = boletoService.toPay(id);
 		if(!findById.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -92,6 +105,43 @@ public class BoletoController extends BaseController<Boleto> {
 			return ResponseEntity.ok(Collections.EMPTY_LIST);
 		}
 		return ResponseEntity.ok(findById.get());
+	}
+
+	@GetMapping("/totais/faturamento/{id}")
+	public ResponseEntity<List<Totais>> buscarTotaisPorFaturamento(@PathVariable("id") Long id) {
+		Optional<List<Boleto>> findById = boletoService.findByFaturamentoId(id);
+		if(findById.isPresent()) {
+			
+			List<Boleto> list = findById.get();
+			List<Totais> totais = new ArrayList<>();
+			
+			totais.add(Totais.builder()
+					.descricao("Todos")
+					.valor(list.stream().map(Boleto::getValor).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.multa(list.stream().map(Boleto::getMulta).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.juros(list.stream().map(Boleto::getJuros).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.total(list.stream().map(Boleto::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.build());
+			
+			totais.add(Totais.builder()
+					.descricao("Nao pagos")
+					.valor(list.stream().filter(b->b.getPagamento()==null).map(Boleto::getValor).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.multa(list.stream().filter(b->b.getPagamento()==null).map(Boleto::getMulta).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.juros(list.stream().filter(b->b.getPagamento()==null).map(Boleto::getJuros).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.total(list.stream().filter(b->b.getPagamento()==null).map(Boleto::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.build());
+
+			totais.add(Totais.builder()
+					.descricao("Pagos")
+					.valor(list.stream().filter(b->b.getPagamento()!=null).map(Boleto::getValor).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.multa(list.stream().filter(b->b.getPagamento()!=null).map(Boleto::getMulta).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.juros(list.stream().filter(b->b.getPagamento()!=null).map(Boleto::getJuros).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.total(list.stream().filter(b->b.getPagamento()!=null).map(Boleto::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add))
+					.build());
+			
+			return ResponseEntity.ok(totais);
+		}
+		return ResponseEntity.ok(Collections.EMPTY_LIST);
 	}
 
 	@GetMapping("/titular/{id}")

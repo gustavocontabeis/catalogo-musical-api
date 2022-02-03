@@ -42,8 +42,7 @@ public class CondominioController extends BaseController<Condominio> {
 
 	@GetMapping()
 	public List<Condominio> listar() {
-		List<Condominio> findAll = condominioService.findAll();
-		return findAll;
+		return condominioService.findAll();
 	}
 
 	@PostMapping("/page")

@@ -1,6 +1,7 @@
 package br.com.codersistemas.condominiosadm.service;
 	
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +15,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.codersistemas.condominiosadm.domain.Apartamento;
+import br.com.codersistemas.condominiosadm.domain.Bloco;
+import br.com.codersistemas.condominiosadm.domain.Boleto;
 import br.com.codersistemas.condominiosadm.domain.Faturamento;
+import br.com.codersistemas.condominiosadm.repository.BlocoRepository;
 import br.com.codersistemas.condominiosadm.repository.CondominioRepository;
 import br.com.codersistemas.condominiosadm.repository.FaturamentoRepository;
 
@@ -26,6 +31,15 @@ public class FaturamentoService {
 
 	@Autowired
 	private CondominioRepository condominioRepository;
+	
+	@Autowired
+	private BlocoService blocoService;
+
+	@Autowired
+	private ApartamentoService apartamentoService;
+
+	@Autowired
+	private BoletoService boletoService;
 
 	
 	@Transactional(readOnly = true)
@@ -45,7 +59,33 @@ public class FaturamentoService {
 
 	@Transactional(readOnly = false)
 	public Faturamento save(@Valid Faturamento entity) {
-		return faturamentoRepository.save(entity);
+		@Valid
+		Faturamento save = faturamentoRepository.save(entity);
+		Optional<List<Bloco>> blocos = blocoService.findByCondominioId(save.getCondominio().getId());
+		if(blocos.isPresent()) {
+			List<Bloco> list = blocos.get();
+			for (Bloco bloco : list) {
+				Optional<List<Apartamento>> apartamentoOptional = apartamentoService.findByBlocoId(bloco.getId());
+				if(apartamentoOptional.isPresent()) {
+					List<Apartamento> apartamentos = apartamentoOptional.get();
+					apartamentos.forEach(ap->saveBloleto(ap, entity));
+				}
+			}
+		}
+		return save;
+	}
+
+	private void saveBloleto(Apartamento ap, Faturamento entity) {
+		boletoService.save(Boleto.builder()
+				.apartamento(ap)
+				.faturamento(entity)
+				.juros(BigDecimal.ZERO)
+				.multa(BigDecimal.ZERO)
+				.valor(new BigDecimal(400))
+				.total(BigDecimal.ZERO)
+				.vencimento(entity.getPeriodo().withDayOfMonth(10))
+				.titular(ap.getTitular())
+				.build());
 	}
 
 	@Transactional(readOnly = false)

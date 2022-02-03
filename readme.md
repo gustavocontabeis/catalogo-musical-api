@@ -49,10 +49,12 @@ docker pull dpage/pgadmin4
 ##Rede
 
 ###Crie a rede para o postgres
+
 ~~~
 docker network create --driver bridge postgres-network
 docker network ls
 ~~~
+
 ~~~
 docker run --name condominio-adm-postgres --network=postgres-network -e "POSTGRES_PASSWORD=Postgres2018!" -p 5432:5432 -v /home/gustavo/dev/workspace-coder/condominios-adm-api/data:/var/lib/postgresql/data -d postgres:9.5-alpine
 ~~~
@@ -70,12 +72,16 @@ docker run --name condominio-adm-pgadmin --network=postgres-network -p 15432:80 
 http://localhost:15432
 ~~~
 
+~~~
 Login:
 gustavocontabeis@gmail.com
 Senha:
 PgAdmin2018!
+~~~
 
 No PGAdmin Configure: 
+
+~~~
 	Add New Server
 	General:
 	Name:condominio-adm-postgres
@@ -83,11 +89,15 @@ No PGAdmin Configure:
 	Host name/address:condominio-adm-postgres
 	username: postgres
 	Password: Postgres2018!
+~~~
 
 para rodar o backend fora do docker, pelo eclipse ou via console (java -jar) usa-se host = 0.0.0.0
-para rodar o backend dentro do docker usa-se host = "nome do continer do postgres"
+
+para rodar o backend dentro do docker usa-se host = "nome do container do postgres"
 
 Em uma aplicação com SpringBoot (pelo eclipse):
+
+~~~
 spring.datasource.driver-class-name=org.postgresql.Driver
 spring.datasource.url=jdbc:postgresql://0.0.0.0:5432/postgres
 spring.datasource.username=postgres
@@ -95,13 +105,17 @@ spring.datasource.password=Postgres2018!
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults=false
 spring.jpa.hibernate.ddl-auto=create-drop
+~~~
 
+Pelo DBeaver use:
 
+~~~
 No DBeaver:
 Host:0.0.0.0
 database:postgres
 user:postgres
 Password:Postgres2018!
+~~~
 
 ####Fontes
 https://medium.com/@renato.groffe/postgresql-docker-executando-uma-inst%C3%A2ncia-e-o-pgadmin-4-a-partir-de-containers-ad783e85b1a4
@@ -110,6 +124,8 @@ https://medium.com/@fernandoevangelista_28291/criando-e-enviando-imagem-docker-c
 
 
 ####Limpando tudo 
+
+~~~
 gustavo@foguetinho:~$ sudo docker ps -a
 gustavo@foguetinho:~$ sudo docker container stop condominio-adm-pgadmin
 gustavo@foguetinho:~$ sudo docker container stop condominio-adm-postgres
@@ -119,13 +135,14 @@ gustavo@foguetinho:~$ sudo docker container rm condominio-adm-postgres
 
 gustavo@foguetinho:~$ sudo docker rmi postgres
 gustavo@foguetinho:~$ sudo docker rmi dpage/pgadmin4
-
+~~~
 
 
 
 
 
 docker tag local-image:tagname new-repo:tagname
+
 sudo docker tag catalogo-musical-api:0.0.1-SNAPSHOT new-repo:0.0.1-SNAPSHOT
 
 
@@ -154,12 +171,29 @@ para rodar o backend dentro do docker usa-se host = "nome do container do postgr
 ~~~
 
 ###Executando o backend com o docker:
+
+#####Não existe
+
+builda o jar
+
 ~~~
 	mvn clean package
+~~~
+
+builda a imagem
+
+~~~
 	docker build --tag=catalogo-musical-api:latest .
+~~~
+
+roda a imagem
+
+~~~
 	docker run --name backend-catalogo-musical -p 8084:8084 --network=postgres-network catalogo-musical-api:latest
 ~~~
-	ou
+
+#####Já existe
+ou, caso tudo ja estaja buildado, apenas suba o container
 	
 ~~~
 	docker container start backend-catalogo-musical
@@ -171,7 +205,7 @@ docker container rm backend-catalogo-musical
 docker rmi catalogo-musical-api
 ~~~
 
-###Executando a aplicaçção com o docker compose:
+###Executando a aplicação com o docker compose:
 
 ~~~
 docker kill $(docker ps -q)
@@ -213,7 +247,6 @@ http://localhost
 http://localhost:15432
 gustavocontabeis@gmail.com
 PgAdmin2018!
-
 ~~~
 
 #Frontend 
