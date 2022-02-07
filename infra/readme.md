@@ -1,1 +1,0 @@
-Aplicativo de Teste de desenvolvimento rápido com coder-gem.

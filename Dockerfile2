@@ -1,4 +1,0 @@
-FROM openjdk:8-jdk-alpine
-VOLUME /home/gustavo/dev/workspace-coder/catalogo-musical-api
-COPY target/spring-boot-docker-*.jar app.jar
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.profiles.active=docker", "-jar", "/app.jar"]

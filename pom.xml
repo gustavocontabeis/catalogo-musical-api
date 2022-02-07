@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.codersistemas</groupId>
-	<artifactId>condominio-adm-api</artifactId>
+	<artifactId>condominios-adm-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>condominio-adm-api</name>
 	<description>Aplicação de exemplo para o coder-gem</description>

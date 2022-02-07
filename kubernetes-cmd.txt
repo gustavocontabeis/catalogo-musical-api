@@ -3,7 +3,7 @@ kubectl create -f kubernetes-pods.yaml --save-config --record
 kubectl get all
 
 cd /home/gustavo/dev/workspace-coder/catalogo-musical-api
-docker build -f Dockerfile-kubernetes --tag=gustavocontabeis/catalogo-musical-api-kubernetes:latest .
+docker build -f Dockerfile --tag=gustavocontabeis/catalogo-musical-api-kubernetes:latest .
 docker push gustavocontabeis/catalogo-musical-api-kubernetes:latest
 docker images
 

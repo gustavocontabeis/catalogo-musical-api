@@ -56,7 +56,7 @@ docker network ls
 ~~~
 
 ~~~
-docker run --name condominio-adm-postgres --network=postgres-network -e "POSTGRES_PASSWORD=Postgres2018!" -p 5432:5432 -v /home/gustavo/dev/workspace-coder/condominios-adm-api/data:/var/lib/postgresql/data -d postgres:9.5-alpine
+docker run --name condominio-adm-postgres --network=postgres-network -e "POSTGRES_PASSWORD=Postgres2018!" -p 5432:5432 -v /home/gustavo/dev/workspace-coder/condominio-adm/data:/var/lib/postgresql/data -d postgres:9.5-alpine
 ~~~
 
 ~~~

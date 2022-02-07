@@ -1,0 +1,9 @@
+                                      
+  xxx  xxxx   xxx   xxxx  xxx         
+  x    x  x   x  x  x     x  x        
+  x    x  x   x  x  xxx   xxx         
+  x    x  x   x  x  x     xx          
+  xxx  xxxx   xxx   xxxx  x  x        
+                                      
+${spring-boot.version}                         
+${application.version}            

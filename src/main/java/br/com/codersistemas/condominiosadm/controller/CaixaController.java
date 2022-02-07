@@ -45,7 +45,7 @@ public class CaixaController extends BaseController<Caixa> {
 	@GetMapping
 	public List<Caixa> listar() {
 		log.debug("listar!");
-		return caixaService.findAll(Sort.by(Order.asc("nome")));
+		return caixaService.findAll(Sort.by(Order.asc("id")));
 	}
 	
 	@PostMapping("/page")
