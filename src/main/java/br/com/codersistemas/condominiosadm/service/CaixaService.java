@@ -75,5 +75,10 @@ public class CaixaService {
 		return caixaRepository.findByCentroDeCustoId(id);
 	}
 
+	@Transactional(readOnly = true)
+	public Optional<List<Caixa>> findLastByCondominio(Long idCondominio) {
+		return caixaRepository.findLastByCondominio(idCondominio);
+	}
+
 }
 

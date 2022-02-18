@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import br.com.codersistemas.condominiosadm.domain.Caixa;
 import br.com.codersistemas.condominiosadm.domain.Condominio;
 
-public interface CaixaRepository extends JpaRepository<Caixa, Long>, JpaSpecificationExecutor<Caixa>  {
+public interface CaixaRepository extends JpaRepository<Caixa, Long>, JpaSpecificationExecutor<Caixa>, CaixaCustomRepository {
 
 	@Query(value = "from Caixa cx where cx.condominio = :condominio")
 	public Caixa findLast(@Param(value = "condominio") Condominio condominio);

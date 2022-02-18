@@ -121,6 +121,19 @@ public class CaixaController extends BaseController<Caixa> {
 		return ResponseEntity.ok(findById.get());
 	}
 
+	@GetMapping("/last/{id}")
+	public ResponseEntity<List<Caixa>> buscarLast(@PathVariable("id") Long id) {
+		Optional<List<Caixa>> findById = caixaService.findLastByCondominio(id);
+		if(!findById.isPresent()) {
+			return ResponseEntity.ok(Collections.EMPTY_LIST);
+		}else {
+			findById.get().forEach(obj -> {
+				ReflectionUtils.mapToBasicDTO(obj);
+			});
+		}
+		return ResponseEntity.ok(findById.get());
+	}
+
 
 }
 

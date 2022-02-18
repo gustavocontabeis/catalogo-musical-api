@@ -2,6 +2,7 @@ package br.com.codersistemas.condominiosadm.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import br.com.codersistemas.condominiosadm.enums.Fluxo;
 import br.com.codersistemas.condominiosadm.enums.TipoDocumento;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,10 +57,9 @@ public class Caixa implements Serializable {
 	private Pessoa pessoa;
 
 	@NotNull(message = "Data deve ser preenchido.")
-	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-	//@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	@Column(name = "data", nullable = false)
-	private LocalDateTime data;
+	private LocalDate data;
 
 	@NotNull(message = "Contro de custo deve ser preenchido.")
 	@ManyToOne
@@ -81,6 +82,10 @@ public class Caixa implements Serializable {
 	@NotNull(message = "Descrição deve ser preenchido.")
 	@Column(name = "descricao", length = 255, nullable = false)
 	private String descricao;
+
+	@NotNull(message = "Fluxo deve ser preenchido.")
+	@Column(name = "fluxo", nullable = false)
+	private Fluxo fluxo;
 
 	@NotNull(message = "Valor deve ser preenchido.")
 	@Column(name = "valor", precision = 10, scale = 2, nullable = false)
