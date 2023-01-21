@@ -1,5 +1,6 @@
 package br.com.codersistemas.condominiosadm.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.codersistemas.condominiosadm.domain.Apartamento;
+import br.com.codersistemas.condominiosadm.dto.FilterSpecification;
+import br.com.codersistemas.condominiosadm.enums.QueryOperator;
 import br.com.codersistemas.condominiosadm.repository.ApartamentoRepository;
 import br.com.codersistemas.condominiosadm.repository.BlocoRepository;
 import br.com.codersistemas.condominiosadm.repository.PessoaRepository;
@@ -40,6 +43,16 @@ public class ApartamentoService {
 	@Transactional(readOnly = true)
 	public Page<Apartamento> findAll(Specification<Apartamento> specification, PageRequest pageRequest) {
 		return apartamentoRepository.findAll(specification, pageRequest);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Apartamento> findAllTeste() {
+		FilterSpecification filter = new FilterSpecification();
+		filter.setField("numero");
+		filter.setOperator(QueryOperator.EQUALS);
+		filter.setValue("101");
+		List<Apartamento> findAll = apartamentoRepository.findAll(createSpecification(filter));
+		return findAll;
 	}
 
 	@Transactional(readOnly = true)
@@ -78,5 +91,76 @@ public class ApartamentoService {
 		return apartamentoRepository.findByBlocoCondominioId(id);
 	}
 
+	@Transactional(readOnly = true)
+	public Optional<List<Apartamento>> findBy(Long id) {
+		return apartamentoRepository.findByBlocoCondominioId(id);
+	}
+	
+	private Specification<Apartamento> createSpecification(FilterSpecification input) {
+		switch (input.getOperator()){
+
+		case EQUALS:
+			return (root, query, criteriaBuilder) -> 
+			criteriaBuilder.equal(root.get(input.getField()),
+					castToRequiredType(root.get(input.getField()).getJavaType(), 
+							input.getValue()));
+
+		case NOT_EQUALS:
+			return (root, query, criteriaBuilder) -> 
+			criteriaBuilder.notEqual(root.get(input.getField()),
+					castToRequiredType(root.get(input.getField()).getJavaType(), 
+							input.getValue()));
+
+		case GREATER_THAN:
+			return (root, query, criteriaBuilder) -> 
+			criteriaBuilder.gt(root.get(input.getField()),
+					(Number) castToRequiredType(
+							root.get(input.getField()).getJavaType(), 
+							input.getValue()));
+
+		case LESS_THAN:
+			return (root, query, criteriaBuilder) -> 
+			criteriaBuilder.lt(root.get(input.getField()),
+					(Number) castToRequiredType(
+							root.get(input.getField()).getJavaType(), 
+							input.getValue()));
+
+		case LIKE:
+			return (root, query, criteriaBuilder) -> 
+			criteriaBuilder.like(root.get(input.getField()), 
+					"%"+input.getValue()+"%");
+
+		case IN:
+			return (root, query, criteriaBuilder) -> 
+			criteriaBuilder.in(root.get(input.getField()))
+			.value(castToRequiredType(
+					root.get(input.getField()).getJavaType(), 
+					input.getValues()));
+
+		default:
+			throw new RuntimeException("Operation not supported yet");
+		}
+	}
+
+	private Object castToRequiredType(Class fieldType, String value) {
+		if(fieldType.isAssignableFrom(Double.class)) {
+			return Double.valueOf(value);
+		} else if(fieldType.isAssignableFrom(String.class)) {
+			return value;
+		} else if(fieldType.isAssignableFrom(Integer.class)) {
+			return Integer.valueOf(value);
+		} else if(Enum.class.isAssignableFrom(fieldType)) {
+			return Enum.valueOf(fieldType, value);
+		}
+		return null;
+	}
+
+	private Object castToRequiredType(Class fieldType, List<String> value) {
+		List<Object> lists = new ArrayList<>();
+		for (String s : value) {
+			lists.add(castToRequiredType(fieldType, s));
+		}
+		return lists;
+	}
 }
 

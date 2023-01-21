@@ -41,11 +41,15 @@ public class ApartamentoController extends BaseController<Apartamento> {
 	@GetMapping
 	public List<Apartamento> listar() {
 		return apartamentoService.findAll(Sort.by(Order.asc("id")));
+		
 	}
 	
 	@PostMapping("/page")
 	public Page<Apartamento> listar(@RequestBody LazyLoadEvent event) {
 		log.info("{}", event);
+		
+		List<Apartamento> findAllTeste = apartamentoService.findAllTeste();//TESTE
+		
 		Specification<Apartamento> specification = createSpecification(event);
 		PageRequest pageRequest = getPageRequest(event);
 		return apartamentoService.findAll(specification, pageRequest);

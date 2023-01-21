@@ -10,11 +10,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.codersistemas.condominiosadm.constantes.RabbitmqConstantes;
 import br.com.codersistemas.condominiosadm.domain.Condominio;
 import br.com.codersistemas.condominiosadm.domain.Sindico;
 import br.com.codersistemas.condominiosadm.repository.CondominioRepository;
 import br.com.codersistemas.condominiosadm.repository.SindicoRepository;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class CondominioService {
 
@@ -24,6 +27,9 @@ public class CondominioService {
 	@Autowired
 	private SindicoRepository sindicoRepository;
 
+	@Autowired
+	private RabbitmqService rabbitmqService;
+
 	@Transactional(readOnly = true)
 	public Optional<List<Condominio>> findBySindicoId(Long id){
 		return condominioRepository.findBySindicoId(id);
@@ -32,6 +38,9 @@ public class CondominioService {
 	@Transactional(readOnly = false)
 	public Condominio save(Condominio obj){
 		obj.setSindico(sindicoRepository.findById(obj.getSindico().getId()).get());
+		log.info("-> {}", obj);
+		rabbitmqService.enviaMensagem(RabbitmqConstantes.FILA_CONDOMINIO, obj);
+		log.info("-> {}", obj);
 		return condominioRepository.save(obj);
 	}
 

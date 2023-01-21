@@ -42,5 +42,5 @@ public class Apartamento implements Serializable {
 
 	@ManyToOne @JoinColumn(name="id_pessoa_titular", nullable=false)//, foreignKey = @ForeignKey(name="Apartamento_Pessoa_titular_fk"))
 	private Pessoa titular;
-
+	
 }

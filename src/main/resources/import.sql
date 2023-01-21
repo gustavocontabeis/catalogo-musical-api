@@ -123,3 +123,8 @@ INSERT INTO public.condominio (id_condominio, nome, logradouro, numero, bairro, 
 INSERT INTO public.bloco (id_bloco, nome, tipo, id_condominio) VALUES(nextval('public.seq_bloco'), 'Bloco 1', 'BLOCO', currval('public.seq_condominio'));
 INSERT INTO public.condominio (id_condominio, nome, logradouro, numero, bairro, cidade, id_sindico) values (nextval('public.seq_condominio'),'Residencial Bom Retiro', 'Rua da Cultura', '1639', 'Auxiliadora', 'Bom Retiro do Sul', currval('public.seq_pessoa'));
 INSERT INTO public.bloco (id_bloco, nome, tipo, id_condominio) VALUES(nextval('public.seq_bloco'), 'Bloco 1', 'BLOCO', currval('public.seq_condominio'));
+DROP TABLE public.authorities;
+DROP TABLE public.users;
+CREATE TABLE public.users(username VARCHAR(200) NOT NULL PRIMARY KEY, password VARCHAR(200) NOT NULL, enabled BOOLEAN NOT NULL);
+CREATE TABLE public.authorities (username VARCHAR(200) NOT NULL, authority VARCHAR(200) NOT NULL, CONSTRAINT fk_authorities_users FOREIGN KEY(username) REFERENCES users(username));
+CREATE UNIQUE INDEX ix_auth_username ON authorities (username,authority);

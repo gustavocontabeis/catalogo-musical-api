@@ -16,6 +16,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import br.com.codersistemas.condominiosadm.enums.Genero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,9 +53,8 @@ public class Pessoa implements Serializable {
 	@Column(length = 10, nullable = false)
 	private Genero genero;
 
-	// @JsonFormat(pattern="dd/MM/yyyy")
+	@JsonFormat(pattern="dd/MM/yyyy")
 	@NotNull(message = "Nascimento deve ser preenchido.")
-	//@Temporal(TemporalType.DATE)
 	@Column(name = "nascimento", nullable = false)
 	private LocalDate nascimento;
 

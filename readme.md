@@ -1,10 +1,18 @@
 #Menu rápido:
 Se já foi construido, apenas suba os serviços com
 
-Desenvolvimento
+##Desenvolvimento
 
+###Backend
 ~~~
 docker container start condominio-adm-postgres
+docker container start condominio-adm-rabbitmq
+~~~
+
+###Frontend
+~~~
+cd ~/dev/workspace-coder/condominio-adm/frontend/condominios-adm-ui
+code .
 ~~~
 
 Produção

@@ -68,6 +68,7 @@ public class CondominioController extends BaseController<Condominio> {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public Condominio adicionar(@Valid @RequestBody Condominio entity) {
+		log.info("{}", entity);
 		return condominioService.save(entity);
 	}
 
